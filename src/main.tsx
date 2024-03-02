@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './router/App.tsx'
+import RouterCommunity from './router/Router.tsx'
 import './assets/styles/index.scss'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <RouterCommunity />
   </React.StrictMode>,
 )
