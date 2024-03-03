@@ -1,19 +1,37 @@
 import { useState } from 'react'
+import { useQuery, useQueryClient } from 'react-query'
 import { Box, Button, CircularProgress, Container, FormControl, Stack, TextField } from '@mui/material'
 import communityLogoDark from "/community-dark.svg"
 import LoginIcon from "@mui/icons-material/Login"
-import { colors } from "../../colors/colors"
+import colors from "../../colors/colors"
+import Service from '../../services/services'
+import { toast } from 'react-toastify'
+import Toastr from '../../components/Toastr/Toastr'
 import './Login.scss'
 
 
 export default function Login() {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const login = () => {
-        setIsLoading(true);
-        setTimeout(() => {
-            setIsLoading(false);
-        }, 2000);
-    }
+    const queryClient = useQueryClient();
+    const [credentials, setCredentials] = useState({ username: '', password: '' });
+
+    const { isLoading } = useQuery("login", () => Service.login(credentials), {
+        enabled: false,
+        retry: false,
+        onSuccess: (data: any) => {
+            console.log(data);
+        },
+        onError: (_error: any) => {
+            toast.error(_error.response.data.error);
+        }
+    });
+
+    const login = async () => {
+        await queryClient.prefetchQuery("login");
+    };
+
+    const handleCredentials = (credential: { key: string, value: string }) => {
+        setCredentials({ ...credentials, [credential.key]: credential.value });
+    };
 
     return (
         <Container maxWidth={false} className={"login-container"}>
@@ -25,12 +43,17 @@ export default function Login() {
                     </Stack>
                     <Stack gap={1.5} mt={2}>
                         <FormControl fullWidth>
-                            <TextField label={"Nom d'utilisateur"} variant="outlined" />
+                            <TextField label={"Nom d'utilisateur"} variant="outlined" name="username"
+                                value={credentials.username} onChange={(event) => handleCredentials({ key: "username", value: event?.target.value })}
+                            />
                         </FormControl>
                         <FormControl fullWidth>
-                            <TextField label={"Mot de passe"} type="password" variant="outlined" />
+                            <TextField label={"Mot de passe"} type="password" variant="outlined" name="password"
+                                value={credentials.password} onChange={(event) => handleCredentials({ key: "password", value: event?.target.value })}
+                            />
                         </FormControl>
-                        <Button variant="contained" className='primary-button' sx={{ mt: 0.8 }} disabled={isLoading} onClick={() => login()}
+                        <Button variant="contained" className='primary-button' sx={{ mt: 0.8 }}
+                            disabled={isLoading} onClick={() => login()}
                             startIcon={
                                 isLoading ? <CircularProgress size={20} sx={{ color: `${colors.dark}60` }} value={70} variant="indeterminate" /> : <LoginIcon sx={{ color: "white" }} />
                             }>
@@ -45,6 +68,7 @@ export default function Login() {
                     </span>
                 </small>
             </Stack>
+            <Toastr />
         </Container>
     )
 }

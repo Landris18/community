@@ -64,7 +64,8 @@ small {
 
 .MuiFormLabel-root {
   font-family: "lexend" !important;
-  color: #241f31 !important;
+  color: #241f31ae !important;
+  font-size: 15.5px !important;
 }
 
 .fieldset.MuiOutlinedInput-notchedOutline {
@@ -77,6 +78,7 @@ fieldset {
 
 .MuiOutlinedInput-root {
   font-family: "lexend" !important;
+  color: #241f31 !important;
 }
 
 .Mui-focused fieldset.MuiOutlinedInput-notchedOutline {
@@ -95,4 +97,17 @@ fieldset {
 .primary-button:disabled {
   background-color: #241f315b !important;
   color: #241f3160 !important;
+}
+
+.Toastify__toast--info {
+  font-family: "lexend";
+}
+
+.Toastify__toast--warning {
+  font-family: "lexend";
+  background: #f57c00 !important;
+}
+
+.Toastify__toast--error {
+  font-family: "lexend";
 }

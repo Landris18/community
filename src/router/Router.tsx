@@ -10,8 +10,8 @@ const RouterCommunity = () => {
 		<HelmetProvider>
 			<Router>
 				<Routes>
-					<Route path="/" element={<><Pagetitle title={"Login"} /><Login /></>} />
-					<Route path="/dashboard" element={<><Pagetitle title={"Dashboard"} /><Dashboard /></>} />
+					<Route path="/" element={<><Pagetitle title={"Login"} /><Login /> </>} />
+					<Route path="/dashboard" element={<><Pagetitle title={"Dashboard"} /><Dashboard /> </>} />
 				</Routes>
 			</Router>
 		</HelmetProvider>
