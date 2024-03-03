@@ -27,7 +27,7 @@ body {
 
 .lexend-bold,
 .lexend-black {
-  font-family: inherit; // Inherit font-family from the parent (body)
+  font-family: inherit;
 }
 
 .lexend-bold {
@@ -90,4 +90,9 @@ fieldset {
   box-shadow: none !important;
   border-radius: 50px !important;
   padding: 10px !important;
+}
+
+.primary-button:disabled {
+  background-color: #241f315b !important;
+  color: #241f3160 !important;
 }

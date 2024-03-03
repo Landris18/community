@@ -1,10 +1,20 @@
-import { Box, Button, Container, FormControl, Stack, TextField } from '@mui/material'
+import { useState } from 'react'
+import { Box, Button, CircularProgress, Container, FormControl, Stack, TextField } from '@mui/material'
 import communityLogoDark from "/community-dark.svg"
 import LoginIcon from "@mui/icons-material/Login"
+import { colors } from "../../colors/colors"
 import './Login.scss'
 
 
 export default function Login() {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const login = () => {
+        setIsLoading(true);
+        setTimeout(() => {
+            setIsLoading(false);
+        }, 2000);
+    }
+
     return (
         <Container maxWidth={false} className={"login-container"}>
             <Stack justifyContent={"center"} alignItems={"center"} width={"100%"} height={"100%"}>
@@ -20,13 +30,16 @@ export default function Login() {
                         <FormControl fullWidth>
                             <TextField label={"Mot de passe"} type="password" variant="outlined" />
                         </FormControl>
-                        <Button variant="contained" className='primary-button' sx={{ mt: 0.8 }} startIcon={<LoginIcon sx={{ color: "white" }} />}>
+                        <Button variant="contained" className='primary-button' sx={{ mt: 0.8 }} disabled={isLoading} onClick={() => login()}
+                            startIcon={
+                                isLoading ? <CircularProgress size={20} sx={{ color: `${colors.dark}60` }} value={70} variant="indeterminate" /> : <LoginIcon sx={{ color: "white" }} />
+                            }>
                             S'authentifier
                         </Button>
                     </Stack>
                 </Stack>
-                <small className='m-0 text-center' style={{lineHeight: 2}}>
-                    Pour toutes questions et problème d'authentification, veuillez contacter <br />
+                <small className='m-0 text-center' style={{ lineHeight: 2 }}>
+                    Pour toutes questions ou problème d'authentification, veuillez contacter <br />
                     <span className='lexend-bold cursor-pointer' style={{ textDecoration: "underline" }} onClick={() => window.open("https://facebook.com/Landris18", '_blank')}>
                         Landry Manankoraisina
                     </span>
