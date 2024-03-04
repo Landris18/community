@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from 'react-query'
 import { Box, Button, CircularProgress, Container, FormControl, Stack, TextField } from '@mui/material'
 import communityLogoDark from "/community-dark.svg"
@@ -7,18 +8,25 @@ import colors from "../../colors/colors"
 import Service from '../../services/services'
 import { toast } from 'react-toastify'
 import Toastr from '../../components/Toastr/Toastr'
+import UserContext from '../../contexts/user/UserContext'
+import { storeToken } from '../../utility/utility'
 import './Login.scss'
 
 
 export default function Login() {
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
+
     const [credentials, setCredentials] = useState({ username: '', password: '' });
+    const { setUserData } = useContext(UserContext);
 
     const { isLoading } = useQuery("login", () => Service.login(credentials), {
         enabled: false,
         retry: false,
         onSuccess: (data: any) => {
-            console.log(data);
+            setUserData(data.success.user);
+            storeToken(data.success.token, data.success.user.id);
+            navigate('/dashboard', { replace: true });
         },
         onError: (_error: any) => {
             toast.error(_error.response.data.error);
