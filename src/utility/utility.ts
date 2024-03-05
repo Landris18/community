@@ -13,6 +13,10 @@ export const getToken = () => {
     return storedToken.accessToken;
 };
 
+export const removeToken = () => {
+    localStorage.removeItem('accessToken');
+};
+
 export const isTokenExpired = () => {
     const storedToken = JSON.parse(localStorage.getItem('accessToken') as string);
     if (!storedToken || !storedToken.userId) return true;

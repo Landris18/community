@@ -6,7 +6,7 @@ import { LuBarChart2 } from "react-icons/lu";
 import { HiOutlineUsers } from "react-icons/hi2";
 import colors from '../../colors/colors';
 import { useContext, useState } from 'react';
-import UserContext from '../../contexts/user/UserContext';
+import UserContext from '../../contexts/UserContext';
 import { BsChevronDoubleDown } from "react-icons/bs";
 import { RiLogoutCircleRLine } from "react-icons/ri";
 import { TbMoneybag } from "react-icons/tb";
@@ -14,6 +14,9 @@ import { Doughnut } from 'react-chartjs-2';
 import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';
 import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
 import CustomTooltip from '../../components/CustomTooltip/CustomTooltip';
+import ConfirmationDialog from '../../components/ConfirmDialog/ConfirmDialog';
+import { removeToken } from '../../utility/utility';
+import { useNavigate } from 'react-router-dom';
 import './Dashboard.scss'
 
 
@@ -24,12 +27,36 @@ Chart.register(ArcElement, Tooltip, Legend);
 Chart.defaults.font.family = "lexend";
 Chart.defaults.plugins.legend.position = "bottom";
 
+const DIALOG_DECONNEXION = "DIALOG_DECONNEXION";
+
 
 export default function PermanentDrawerLeft() {
+    const navigate = useNavigate();
     const { user } = useContext(UserContext);
     const [activeMenu, setActiveMenu] = useState("dashboard");
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [dialogOptions, setDialogOptions] = useState<any>({});
+
+    const handleOpenDialog = (dialog: string) => {
+        setOpenDialog(true);
+        if (dialog === DIALOG_DECONNEXION) {
+            const options = {
+                title: 'Déconnexion',
+                message: 'Voulez-vous vraiment vous déconnecter de community ?',
+                confirmText: "Me déconnecter",
+                btnClass: "danger-button",
+                handleCloseDialog: handleCloseDialog,
+                handleConfirmDialog: logout
+            };
+            setDialogOptions(options);
+        }
+    };
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
 
     const chartData = {
         labels: ['Solde', 'Dette'],
@@ -63,6 +90,11 @@ export default function PermanentDrawerLeft() {
         }
     };
 
+    const logout = () => {
+        removeToken();
+        navigate("/", { replace: true });
+    }
+
     return (
         <Box sx={{ display: 'flex' }}>
             <Drawer sx={{ width: drawerWidth, flexShrink: 0, '& .MuiDrawer-paper': { width: drawerWidth, boxSizing: 'border-box' } }} variant="permanent" anchor="left">
@@ -72,13 +104,13 @@ export default function PermanentDrawerLeft() {
                     </Stack>
                     <Stack alignItems={"center"} gap={5}>
                         <CustomTooltip title={"Dashboard"}>
-                            <IconButton>
-                                <LuBarChart2 onClick={() => setActiveMenu("dashboard")} className='cursor-pointer' size={25} color={activeMenu === "dashboard" ? colors.dark : `${colors.dark}60`} />
+                            <IconButton onClick={() => setActiveMenu("dashboard")}>
+                                <LuBarChart2 className='cursor-pointer' size={25} color={activeMenu === "dashboard" ? colors.dark : `${colors.dark}60`} />
                             </IconButton>
                         </CustomTooltip>
                         <CustomTooltip title={"Membres"}>
-                            <IconButton>
-                                <HiOutlineUsers onClick={() => setActiveMenu("info")} className='cursor-pointer' size={25} color={activeMenu !== "dashboard" ? colors.dark : `${colors.dark}60`} />
+                            <IconButton onClick={() => setActiveMenu("info")}>
+                                <HiOutlineUsers className='cursor-pointer' size={25} color={activeMenu !== "dashboard" ? colors.dark : `${colors.dark}60`} />
                             </IconButton>
                         </CustomTooltip>
                     </Stack>
@@ -130,7 +162,7 @@ export default function PermanentDrawerLeft() {
                                         {user.is_admin === 1 ? "Admin" : "Utilisateur"}
                                     </small>
                                     <Divider />
-                                    <Button variant="contained" className='logout-button' sx={{ mt: 2 }}
+                                    <Button variant="contained" className='logout-button' sx={{ mt: 2 }} onClick={() => { handleCloseUserMenu(); handleOpenDialog(DIALOG_DECONNEXION) }}
                                         startIcon={<RiLogoutCircleRLine size={15} style={{ color: "white" }} />}>
                                         Se déconnecter
                                     </Button>
@@ -196,6 +228,7 @@ export default function PermanentDrawerLeft() {
                     </Stack>
                 </Stack>
             </Drawer>
+            <ConfirmationDialog open={openDialog} options={dialogOptions} />
         </Box>
     );
 }

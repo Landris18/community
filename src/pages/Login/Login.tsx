@@ -8,7 +8,7 @@ import colors from "../../colors/colors"
 import Service from '../../services/services'
 import { toast } from 'react-toastify'
 import Toastr from '../../components/Toastr/Toastr'
-import UserContext from '../../contexts/user/UserContext'
+import UserContext from '../../contexts/UserContext'
 import { storeToken } from '../../utility/utility'
 import './Login.scss'
 

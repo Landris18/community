@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import RouterCommunity from './router/Router.tsx'
 import { QueryClient, QueryClientProvider } from 'react-query';
-import UserProvider from './contexts/user/UserProvider.tsx';
+import UserProvider from './contexts/UserProvider.tsx';
 import './assets/styles/index.scss'
 
 const queryClient = new QueryClient();
