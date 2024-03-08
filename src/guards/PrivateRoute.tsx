@@ -3,7 +3,7 @@ import UserContext from '../contexts/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from 'react-query';
 import Service from '../services/services';
-import { isTokenExpired } from '../utility/utility';
+import { isTokenExpired, storeToken } from '../utility/utility';
 import LoadingGlobal from '../components/LoadingGlobal/LoadingGlobal';
 
 interface PrivateRouteProps {
@@ -21,15 +21,19 @@ const PrivateRoute = ({ children, page, redirectTo }: PrivateRouteProps) => {
 
     const { isLoading } = useQuery(
         'user',
-        () => Service.getOneMembre(storedToken.userId),
+        () => Service.getMembreById(storedToken.userId),
         {
             enabled: false,
             retry: false,
             onSuccess: (data: any) => {
-                setUserData(data.success[0]);
+                setUserData(data.success.user);
+                storeToken(data.success.token, data.success.user.id);
                 if (page === 'login') {
                     navigate(redirectTo, { replace: true });
                 }
+            },
+            onError: () => {
+                navigate("/", { replace: true });
             },
         }
     );

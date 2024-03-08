@@ -29,7 +29,7 @@ export default class Service {
         return res;
     }
 
-    static async getOneMembre(id: number) {
+    static async getMembreById(id: number) {
         let res;
         await axios.get(`${this.baseUrl}membre/${id}`, {
             ...this.getBearerToken(),

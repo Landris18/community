@@ -130,7 +130,6 @@ export default function PermanentDrawerLeft() {
                             {
                                 isFullscreen ? (
                                     <MdFullscreenExit onClick={() => toggleFullscreen()} size={30} className='cursor-pointer' />
-
                                 ) : (
                                     <MdFullscreen onClick={() => toggleFullscreen()} size={30} className='cursor-pointer' />
                                 )
