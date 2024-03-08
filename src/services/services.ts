@@ -40,4 +40,28 @@ export default class Service {
         });
         return res;
     }
+
+    static async getTotals() {
+        let res;
+        await axios.get(`${this.baseUrl}get_totals`, {
+            ...this.getBearerToken(),
+        }).then((response) => {
+            res = response.data;
+        }).catch((error) => {
+            throw error;
+        });
+        return res;
+    }
+
+    static async getStats() {
+        let res;
+        await axios.get(`${this.baseUrl}get_stats`, {
+            ...this.getBearerToken(),
+        }).then((response) => {
+            res = response.data;
+        }).catch((error) => {
+            throw error;
+        });
+        return res;
+    }
 }

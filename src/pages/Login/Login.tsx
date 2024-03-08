@@ -14,8 +14,8 @@ import './Login.scss'
 
 
 export default function Login() {
-    const queryClient = useQueryClient();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
     const [credentials, setCredentials] = useState({ username: '', password: '' });
     const { setUserData } = useContext(UserContext);
