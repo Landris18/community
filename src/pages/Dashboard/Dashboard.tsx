@@ -8,9 +8,10 @@ import { HiOutlineUsers } from "react-icons/hi2";
 import colors from '../../colors/colors';
 import { useContext, useEffect, useState } from 'react';
 import UserContext from '../../contexts/UserContext';
-import { BsChevronDoubleDown } from "react-icons/bs";
+import { GiReceiveMoney } from "react-icons/gi";
 import { RiLogoutCircleRLine } from "react-icons/ri";
 import { TbMoneybag } from "react-icons/tb";
+import { GrMoney } from "react-icons/gr";
 import { Bar, Doughnut } from 'react-chartjs-2';
 import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';
 import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
@@ -143,13 +144,13 @@ export default function PermanentDrawerLeft() {
     }
 
     const getStatus = () => {
-        if (totals.total_dettes > totals.total_soldes) {
-            return { status: "En régression", colors: colors.red }
+        if (totals.total_dettes > totals.total_soldes_reel) {
+            return { status: "Endetté", colors: colors.red }
         }
-        if (totals.total_dettes === totals.total_soldes) {
+        if (totals.total_dettes === totals.total_soldes_reel) {
             return { status: "Stable", colors: colors.blue }
         }
-        if (totals.total_dettes < totals.total_soldes) {
+        if (totals.total_dettes < totals.total_soldes_reel) {
             return { status: "En croissance", colors: colors.green }
         }
     }
@@ -169,11 +170,11 @@ export default function PermanentDrawerLeft() {
      * Charts
     */
     const totalsChartData = {
-        labels: ['Solde comptable', 'Dette'],
+        labels: ['Solde comptable', 'Dette', 'Solde réel'],
         datasets: [
             {
-                data: [totals.total_soldes, totals.total_dettes],
-                backgroundColor: [`${colors.blue}`, `${colors.yellow}`],
+                data: [totals.total_soldes, totals.total_dettes, totals.total_soldes_reel],
+                backgroundColor: [`${colors.blue}`, `${colors.yellow}`, `${colors.teal}`],
                 hoverBorderColor: "white"
             },
         ]
@@ -183,7 +184,7 @@ export default function PermanentDrawerLeft() {
         labels: getMonth(stats.cotisations),
         datasets: [
             {
-                label: 'Solde comptable',
+                label: 'Revenu total',
                 data: extractTotalMontant(stats.revenus_total),
                 backgroundColor: colors.blue,
             },
@@ -196,11 +197,6 @@ export default function PermanentDrawerLeft() {
                 label: 'Dépense',
                 data: extractTotalMontant(stats.depenses),
                 backgroundColor: colors.red,
-            },
-            {
-                label: 'Solde réel',
-                data: extractTotalMontant(stats.soldes_reel),
-                backgroundColor: colors.green,
             }
         ],
     };
@@ -259,7 +255,7 @@ export default function PermanentDrawerLeft() {
                                 <h1 className='m-0 lexend-bold'>Dashboard</h1>
                                 <small>Vous pouvez voir ici l'état budgétaire notre communauté</small>
                                 <Stack p={3} borderRadius={4} bgcolor={"white"} mt={4} gap={4.5}>
-                                    <h4 className='m-0'>Statistiques budgétaire</h4>
+                                    <h4 className='m-0'>Statistique budgétaire</h4>
                                     <Bar id='stats-chart' options={options} data={statsChartData} />
                                 </Stack>
                             </Stack>
@@ -270,9 +266,13 @@ export default function PermanentDrawerLeft() {
                                     <Stack width={"100%"} direction={"row"} justifyContent={"end"} alignItems={"center"} gap={0.7}>
                                         {
                                             isFullscreen ? (
-                                                <MdFullscreenExit onClick={() => toggleFullscreen()} size={30} className='cursor-pointer' />
+                                                <IconButton onClick={() => toggleFullscreen()}>
+                                                    <MdFullscreenExit size={30} className='cursor-pointer' />
+                                                </IconButton>
                                             ) : (
-                                                <MdFullscreen onClick={() => toggleFullscreen()} size={30} className='cursor-pointer' />
+                                                <IconButton onClick={() => toggleFullscreen()}>
+                                                    <MdFullscreen size={30} className='cursor-pointer' />
+                                                </IconButton>
                                             )
                                         }
                                         <CustomTooltip title={user.username}>
@@ -309,7 +309,7 @@ export default function PermanentDrawerLeft() {
                                             </Stack>
                                         </Menu>
                                     </Stack>
-                                    <Stack width={"100%"} mt={5} gap={3.5}>
+                                    <Stack width={"100%"} mt={1} gap={3.5}>
                                         <Stack gap={1} alignItems={"start"}>
                                             <h4 className='m-0'>Situation</h4>
                                             <Stack direction={"row"} alignItems={"center"} gap={0.5} py={0.8} px={1.5} bgcolor={`${getStatus()?.colors}20`} borderRadius={50}>
@@ -318,24 +318,39 @@ export default function PermanentDrawerLeft() {
                                         </Stack>
                                         <Stack gap={1.5}>
                                             <h4 className='m-0'>Budget</h4>
-                                            <Stack bgcolor={colors.blue} borderRadius={3} p={2}>
-                                                <Stack direction={"row"} alignItems={"center"} gap={2.5}>
-                                                    <TbMoneybag size={30} color='white' />
-                                                    <Stack>
-                                                        <small className='text-white'>Solde comptable</small>
-                                                        <h3 className='m-0 text-white lexend-bold'>{formatNumber(totals.total_soldes)} Ar</h3>
+                                            <CustomTooltip title={"Revenus + cotisations - dépenses - dettes"}>
+                                                <Stack bgcolor={colors.teal} borderRadius={3} p={2}>
+                                                    <Stack direction={"row"} alignItems={"center"} gap={2.5}>
+                                                        <TbMoneybag size={30} color='white' />
+                                                        <Stack>
+                                                            <small className='text-white'>Solde réel</small>
+                                                            <h3 className='m-0 text-white lexend-bold'>{formatNumber(totals.total_soldes_reel)} Ar</h3>
+                                                        </Stack>
                                                     </Stack>
                                                 </Stack>
-                                            </Stack>
-                                            <Stack bgcolor={colors.yellow} borderRadius={3} p={2}>
-                                                <Stack direction={"row"} alignItems={"center"} gap={2.5}>
-                                                    <BsChevronDoubleDown size={30} color='white' />
-                                                    <Stack>
-                                                        <small className='text-white'>Dette</small>
-                                                        <h3 className='m-0 text-white lexend-bold'>{formatNumber(totals.total_dettes)}  Ar</h3>
+                                            </CustomTooltip>
+                                            <CustomTooltip title={"Revenus + cotisations - depenses"}>
+                                                <Stack bgcolor={colors.blue} borderRadius={3} p={2}>
+                                                    <Stack direction={"row"} alignItems={"center"} gap={2.5}>
+                                                        <GrMoney size={30} color='white' />
+                                                        <Stack>
+                                                            <small className='text-white'>Solde comptable</small>
+                                                            <h3 className='m-0 text-white lexend-bold'>{formatNumber(totals.total_soldes)} Ar</h3>
+                                                        </Stack>
                                                     </Stack>
                                                 </Stack>
-                                            </Stack>
+                                            </CustomTooltip>
+                                            <CustomTooltip title={"Dette"}>
+                                                <Stack bgcolor={colors.yellow} borderRadius={3} p={2}>
+                                                    <Stack direction={"row"} alignItems={"center"} gap={2.5}>
+                                                        <GiReceiveMoney size={30} color='white' />
+                                                        <Stack>
+                                                            <small className='text-white'>Dette</small>
+                                                            <h3 className='m-0 text-white lexend-bold'>{formatNumber(totals.total_dettes)}  Ar</h3>
+                                                        </Stack>
+                                                    </Stack>
+                                                </Stack>
+                                            </CustomTooltip>
                                         </Stack>
                                         <Stack gap={1.5}>
                                             <h4 className='m-0'>Répartition</h4>
