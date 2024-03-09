@@ -1,3 +1,4 @@
+import 'chart.js/auto';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import { Avatar, Divider, IconButton, Stack, Menu, Button } from '@mui/material';
@@ -10,7 +11,7 @@ import UserContext from '../../contexts/UserContext';
 import { BsChevronDoubleDown } from "react-icons/bs";
 import { RiLogoutCircleRLine } from "react-icons/ri";
 import { TbMoneybag } from "react-icons/tb";
-import { Doughnut } from 'react-chartjs-2';
+import { Bar, Doughnut } from 'react-chartjs-2';
 import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';
 import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
 import CustomTooltip from '../../components/CustomTooltip/CustomTooltip';
@@ -46,8 +47,12 @@ export default function PermanentDrawerLeft() {
     const [dialogOptions, setDialogOptions] = useState<any>({});
     const [allQueriesLoaded, setAllQueriesLoaded] = useState(false);
     const [totals, setTotals] = useState<any>({});
+    const [stats, setStats] = useState<any>({});
 
 
+    /**
+     * Stuffs for queries
+    */
     const queries = [
         {
             queryKey: 'totals',
@@ -65,7 +70,7 @@ export default function PermanentDrawerLeft() {
             retry: false,
             queryFn: () => Service.getStats(),
             onSuccess: (data: any) => {
-                console.log('Stats data loaded:', data);
+                setStats(data.success);
             },
             onError: () => {
                 toast.error("Problème de récuperation des stats");
@@ -75,6 +80,9 @@ export default function PermanentDrawerLeft() {
     const queryResults = useQueries(queries);
 
 
+    /**
+     * useEffects
+    */
     useEffect(() => {
         const allLoaded = queryResults.every(result => !result.isLoading);
         if (allLoaded) {
@@ -83,6 +91,9 @@ export default function PermanentDrawerLeft() {
     }, [queryResults]);
 
 
+    /**
+     * Some functions
+    */
     const handleOpenDialog = (dialog: string) => {
         setOpenDialog(true);
         if (dialog === DIALOG_DECONNEXION) {
@@ -100,18 +111,6 @@ export default function PermanentDrawerLeft() {
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
-    };
-
-    const chartData = {
-        labels: ['Solde comptable', 'Dette'],
-        datasets: [
-            {
-                data: [totals.total_soldes, totals.total_dettes],
-                backgroundColor: [`${colors.blue}`, `${colors.yellow}`],
-                hoverBackgroundColor: [`${colors.blue}`, `${colors.yellow}`],
-                hoverBorderColor: "white"
-            },
-        ]
     };
 
     const handleOpenUserMenu = (event: any) => {
@@ -155,6 +154,80 @@ export default function PermanentDrawerLeft() {
         }
     }
 
+    const getMonth = (obj: any) => {
+        const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+            'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+        ];
+        return obj?.map((ob: any) => months[ob.mois - 1] || '');
+    };
+
+    const extractTotalMontant = (obj: any) => {
+        return obj?.map((ob: any) => ob.totalMontant || 0);
+    };
+
+    /**
+     * Charts
+    */
+    const totalsChartData = {
+        labels: ['Solde comptable', 'Dette'],
+        datasets: [
+            {
+                data: [totals.total_soldes, totals.total_dettes],
+                backgroundColor: [`${colors.blue}`, `${colors.yellow}`],
+                hoverBorderColor: "white"
+            },
+        ]
+    };
+
+    const statsChartData = {
+        labels: getMonth(stats.cotisations),
+        datasets: [
+            {
+                label: 'Solde comptable',
+                data: extractTotalMontant(stats.revenus_total),
+                backgroundColor: colors.blue,
+            },
+            {
+                label: 'Dette',
+                data: extractTotalMontant(stats.dettes),
+                backgroundColor: colors.yellow,
+            },
+            {
+                label: 'Dépense',
+                data: extractTotalMontant(stats.depenses),
+                backgroundColor: colors.red,
+            },
+            {
+                label: 'Solde réel',
+                data: extractTotalMontant(stats.soldes_reel),
+                backgroundColor: colors.green,
+            }
+        ],
+    };
+
+    const options = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top' as const,
+            },
+            tooltip: {
+                callbacks: {
+                    label: function (context: any) {
+                        let label = context.dataset.label || '';
+                        if (label) {
+                            label += ': ';
+                        }
+                        if (context.parsed.y !== null) {
+                            label += `${formatNumber(context.parsed.y)} Ar`;
+                        }
+                        return label;
+                    }
+                }
+            }
+        },
+    };
+
     return (
         <>
             {
@@ -184,8 +257,11 @@ export default function PermanentDrawerLeft() {
                         <Box component="main" sx={{ flexGrow: 1, bgcolor: '#fbfbfb', px: 10, pt: 4 }} height={"100vh"}>
                             <Stack width={"100%"}>
                                 <h1 className='m-0 lexend-bold'>Dashboard</h1>
-                                <small>Vous pouvez voir ici l'état actuel du compte de la communauté</small>
-                                <Divider sx={{ mt: 2 }} />
+                                <small>Vous pouvez voir ici l'état budgétaire notre communauté</small>
+                                <Stack p={3} borderRadius={4} bgcolor={"white"} mt={4} gap={4.5}>
+                                    <h4 className='m-0'>Statistiques budgétaire</h4>
+                                    <Bar id='stats-chart' options={options} data={statsChartData} />
+                                </Stack>
                             </Stack>
                         </Box>
                         <Drawer sx={{ width: drawerWidthRight, flexShrink: 0, '& .MuiDrawer-paper': { width: drawerWidthRight, boxSizing: 'border-box' } }} variant="permanent" anchor="right">
@@ -263,7 +339,7 @@ export default function PermanentDrawerLeft() {
                                         </Stack>
                                         <Stack gap={1.5}>
                                             <h4 className='m-0'>Répartition</h4>
-                                            <Doughnut data={chartData} options={{
+                                            <Doughnut id='totals-chart' data={totalsChartData} options={{
                                                 plugins: {
                                                     tooltip: {
                                                         callbacks: {
@@ -285,7 +361,7 @@ export default function PermanentDrawerLeft() {
                                     </Stack>
                                 </Stack>
                                 <Stack px={8}>
-                                    <small className='text-center' style={{ color: `${colors.dark}95` }}>
+                                    <small className='text-center' style={{ color: `${colors.dark}95`, fontSize: 12.5 }}>
                                         Community 0.0.0-beta <br /> By Landry Manankoraisina
                                     </small>
                                 </Stack>
