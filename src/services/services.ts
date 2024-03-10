@@ -15,7 +15,7 @@ export default class Service {
             };
         }
         console.log(accessToken);
-        
+
         return {};
     }
 
@@ -53,9 +53,9 @@ export default class Service {
         return res;
     }
 
-    static async getStats() {
+    static async getStats(annee: number) {
         let res;
-        await axios.get(`${this.baseUrl}get_stats`, {
+        await axios.get(`${this.baseUrl}get_stats?annee=${annee}`, {
             ...this.getBearerToken(),
         }).then((response) => {
             res = response.data;

@@ -1,7 +1,7 @@
 import 'chart.js/auto';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import { Avatar, Divider, IconButton, Stack, Menu, Button } from '@mui/material';
+import { Avatar, Divider, IconButton, Stack, Menu, Button, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import communityLogoDark from "/community-dark.svg"
 import { LuBarChart2 } from "react-icons/lu";
 import { HiOutlineUsers } from "react-icons/hi2";
@@ -36,8 +36,20 @@ Chart.defaults.plugins.legend.position = "bottom";
 
 const DIALOG_DECONNEXION = "DIALOG_DECONNEXION";
 
+const getYearsBetween = () => {
+    const currentYear = new Date().getFullYear();
+    const startYear = 2023;
+    const years = [];
 
-export default function PermanentDrawerLeft() {
+    for (let year = startYear; year <= currentYear; year++) {
+        years.push(year);
+    }
+
+    return years;
+};
+
+
+export default function Dashboard() {
     const navigate = useNavigate();
     const { user } = useContext(UserContext);
 
@@ -49,6 +61,10 @@ export default function PermanentDrawerLeft() {
     const [allQueriesLoaded, setAllQueriesLoaded] = useState(false);
     const [totals, setTotals] = useState<any>({});
     const [stats, setStats] = useState<any>({});
+    const [anneeStats, setAnneeStats] = useState(new Date().getFullYear());
+    const [lstYears] = useState(getYearsBetween());
+
+    let anneeFilterStats = anneeStats;
 
 
     /**
@@ -58,6 +74,7 @@ export default function PermanentDrawerLeft() {
         {
             queryKey: 'totals',
             retry: false,
+            refetch: false,
             queryFn: () => Service.getTotals(),
             onSuccess: (data: any) => {
                 setTotals(data.success);
@@ -69,7 +86,8 @@ export default function PermanentDrawerLeft() {
         {
             queryKey: 'stats',
             retry: false,
-            queryFn: () => Service.getStats(),
+            refetch: false,
+            queryFn: () => Service.getStats(anneeFilterStats),
             onSuccess: (data: any) => {
                 setStats(data.success);
             },
@@ -140,7 +158,7 @@ export default function PermanentDrawerLeft() {
     }
 
     const formatNumber = (number: number) => {
-        return number.toLocaleString().replace(/,/g, ' ');
+        return number?.toLocaleString().replace(/,/g, ' ');
     }
 
     const getStatus = () => {
@@ -165,6 +183,15 @@ export default function PermanentDrawerLeft() {
     const extractTotalMontant = (obj: any) => {
         return obj?.map((ob: any) => ob.totalMontant || 0);
     };
+
+    const handleChangeAnneeStats = async (event: any) => {
+        if (anneeStats !== event.target.value) {
+            anneeFilterStats = event.target.value;
+            setAnneeStats(event.target.value);
+            await queryResults[1].refetch();
+        }
+    };
+
 
     /**
      * Charts
@@ -255,7 +282,23 @@ export default function PermanentDrawerLeft() {
                                 <h1 className='m-0 lexend-bold'>Dashboard</h1>
                                 <small>Vous pouvez voir ici l'état budgétaire notre communauté</small>
                                 <Stack p={3} borderRadius={4} bgcolor={"white"} mt={4} gap={4.5}>
-                                    <h4 className='m-0'>Statistique budgétaire</h4>
+                                    <Stack direction={"row"} justifyContent={"space-between"} alignItems={"start"}>
+                                        <h4 className='m-0'>Statistique budgétaire</h4>
+                                        <FormControl sx={{ minWidth: 100 }} size="small">
+                                            <InputLabel>Année</InputLabel>
+                                            <Select
+                                                value={anneeStats}
+                                                label="Année"
+                                                onChange={handleChangeAnneeStats}
+                                            >
+                                                {
+                                                    lstYears.map((year: number) => (
+                                                        <MenuItem key={year} value={year}>{year}</MenuItem>
+                                                    ))
+                                                }
+                                            </Select>
+                                        </FormControl>
+                                    </Stack>
                                     <Bar id='stats-chart' options={options} data={statsChartData} />
                                 </Stack>
                             </Stack>
