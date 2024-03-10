@@ -28,6 +28,7 @@ import Service from '../../services/services';
 import Toastr from '../../components/Toastr/Toastr';
 import { toast } from 'react-toastify';
 import LoadingGlobal from '../../components/LoadingGlobal/LoadingGlobal';
+import TabMenu from '../../components/TabMenu/TabMenu';
 import './Dashboard.scss';
 
 
@@ -284,28 +285,30 @@ export default function Dashboard() {
                                 </Stack>
                             </Stack>
                         </Drawer>
-                        <Box component="main" sx={{ flexGrow: 1, bgcolor: '#fbfbfb', px: 10, pt: 4 }} height={"100vh"}>
+                        <Box id='main' component="main" sx={{ flexGrow: 1, bgcolor: '#fbfbfb', px: 10, pt: 4, overflowY: "scroll" }} height={"100vh"}>
                             <Stack width={"100%"}>
-                                <h1 className='m-0 lexend-bold'>Transactions</h1>
-                                <small>Vous pouvez voir ici nos transactions par mois</small>
-                                <Stack p={3} borderRadius={4} bgcolor={"white"} mt={3} gap={4.5}>
-                                    <Stack direction={"row"} justifyContent={"space-between"} alignItems={"start"}>
-                                        <h4 className='m-0'>Statistique des transactions</h4>
-                                        <FormControl size="small">
-                                            <InputLabel>Année</InputLabel>
-                                            <Select
-                                                value={anneeStats}
-                                                label="Année"
-                                                onChange={handleChangeAnneeStats}
-                                            >
-                                                {
-                                                    lstYears.map((year: number) => (
-                                                        <MenuItem key={year} value={year}>{year}</MenuItem>
-                                                    ))
-                                                }
-                                            </Select>
-                                        </FormControl>
+                                <Stack direction={"row"} justifyContent={"space-between"} alignItems={"end"}>
+                                    <Stack>
+                                        <h1 className='m-0 lexend-bold'>Transactions</h1>
+                                        <small>Vous pouvez voir ici nos transactions par mois</small>
                                     </Stack>
+                                    <FormControl size="small">
+                                        <InputLabel>Année</InputLabel>
+                                        <Select
+                                            value={anneeStats}
+                                            label="Année"
+                                            onChange={handleChangeAnneeStats}
+                                        >
+                                            {
+                                                lstYears.map((year: number) => (
+                                                    <MenuItem key={year} value={year}>{year}</MenuItem>
+                                                ))
+                                            }
+                                        </Select>
+                                    </FormControl>
+                                </Stack>
+                                <Stack p={3} borderRadius={4} bgcolor={"white"} mt={3} gap={4.5}>
+                                    <h4 className='m-0'>Statistique des transactions</h4>
                                     {
                                         loadingStats ? (
                                             <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} pb={5}>
@@ -321,9 +324,13 @@ export default function Dashboard() {
                                         )
                                     }
                                 </Stack>
+                                <Stack p={3} borderRadius={4} bgcolor={"white"} mt={3} gap={1}>
+                                    <h4 className='m-0'>Suivi financier</h4>
+                                    <TabMenu />
+                                </Stack>
                             </Stack>
                         </Box>
-                        <Drawer sx={{ width: drawerWidthRight, flexShrink: 0, '& .MuiDrawer-paper': { width: drawerWidthRight, boxSizing: 'border-box' } }} variant="permanent" anchor="right">
+                        <Drawer id='right-sidebar' sx={{ width: drawerWidthRight, flexShrink: 0, '& .MuiDrawer-paper': { width: drawerWidthRight, boxSizing: 'border-box' } }} variant="permanent" anchor="right">
                             <Stack width={"100%"} height={"100%"} justifyContent={"space-between"} mt={4} pb={3}>
                                 <Stack px={8}>
                                     <Stack width={"100%"} direction={"row"} justifyContent={"end"} alignItems={"center"} gap={0.7}>
