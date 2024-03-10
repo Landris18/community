@@ -3,7 +3,7 @@ import * as React from 'react';
 import {
     Stack, styled, Box, Tab, Tabs, TableContainer,
     Table, TableHead, TableRow, TableCell, TableBody,
-    InputLabel, Select, FormControl, MenuItem, FormControlLabel, Switch, alpha
+    InputLabel, Select, FormControl, MenuItem, FormControlLabel, Switch, alpha, CircularProgress
 } from '@mui/material';
 import colors from '../../colors/colors';
 import { MONTHS } from '../../utility/utility';
@@ -45,7 +45,7 @@ const columns = [
 ];
 
 const TabPanel = (props: TabPanelProps) => {
-    const { value, index, data, valueInput, valueSwitch, changeMois, changeOnlyPaid } = props;
+    const { value, index, data, valueInput, valueSwitch, changeMois, changeOnlyPaid, isLoading } = props;
     const cols = columns[index];
 
     const getColorPaiement = (mode: string) => {
@@ -73,29 +73,29 @@ const TabPanel = (props: TabPanelProps) => {
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
         >
-            <Stack mt={1.5}>
-                <Stack direction={"row"} width={"100%"} justifyContent={"start"} alignItems={"center"} gap={2}>
-                    <FormControl size="small">
-                        <InputLabel>Mois</InputLabel>
-                        <Select
-                            value={valueInput ?? ""}
-                            label="Mois"
-                            onChange={changeMois as any}
-                        >
-                            {
-                                MONTHS.map((mo: string) => (
-                                    <MenuItem key={mo} value={mo}>{mo}</MenuItem>
-                                ))
-                            }
-                        </Select>
-                    </FormControl>
-                    <FormControlLabel control={<PinkSwitch checked={valueSwitch} onChange={changeOnlyPaid as any} />} label="Payée seulement" />
-                </Stack>
-                <Stack bgcolor={"#e1e6ec20"}>
-                    <TableContainer sx={{ maxHeight: 450 }} >
-                        {(() => {
-                            if (index === 0) {
-                                return (
+            {(() => {
+                if (index === 0) {
+                    return (
+                        <Stack mt={1.5}>
+                            <Stack direction={"row"} width={"100%"} justifyContent={"start"} alignItems={"center"} gap={2}>
+                                <FormControl size="small">
+                                    <InputLabel>Mois</InputLabel>
+                                    <Select
+                                        value={valueInput ?? ""}
+                                        label="Mois"
+                                        onChange={changeMois as any}
+                                    >
+                                        {
+                                            MONTHS.map((mo: string) => (
+                                                <MenuItem key={mo} value={mo}>{mo}</MenuItem>
+                                            ))
+                                        }
+                                    </Select>
+                                </FormControl>
+                                <FormControlLabel control={<PinkSwitch checked={valueSwitch} onChange={changeOnlyPaid as any} />} label="Payée seulement" />
+                            </Stack>
+                            <Stack bgcolor={"#e1e6ec20"}>
+                                <TableContainer sx={{ maxHeight: 450 }} >
                                     <Table sx={{ minWidth: 650 }} aria-label="simple table" stickyHeader>
                                         <TableHead>
                                             <TableRow>
@@ -106,37 +106,57 @@ const TabPanel = (props: TabPanelProps) => {
                                                 }
                                             </TableRow>
                                         </TableHead>
-                                        <TableBody>
-                                            {data?.map((row: any, i: number) => (
-                                                <TableRow key={i} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                                    <TableCell component="th" scope="row">
-                                                        {row.date_paiement ? moment(row.date_paiement).format("DD-MM-YYYY") : "Aucun"}
-                                                    </TableCell>
-                                                    <TableCell align="right">{row.username}</TableCell>
-                                                    <TableCell align="right">{row.montant ?? "Aucun"}</TableCell>
-                                                    <TableCell align="right">{row.mois ? row.mois + " " + row.annee : "Aucun"}</TableCell>
-                                                    <TableCell align="right">
-                                                        <Stack alignItems={"end"} justifyContent={"end"} >
-                                                            <Stack py={0.5} px={1.5} bgcolor={`${getColorPaiement(row.mode_paiement ?? "Non payé")}20`} borderRadius={50}>
-                                                                <small style={{ color: `${getColorPaiement(row.mode_paiement ?? "Non payé")}`, letterSpacing: 0.5, fontSize: 12.5 }}>
-                                                                    {row.mode_paiement ?? "Non payé"}
-                                                                </small>
-                                                            </Stack>
-                                                        </Stack>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
+                                        {
+                                            isLoading ? (
+                                                <TableCell colSpan={5}>
+                                                    <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} py={5}>
+                                                        <CircularProgress size={60} sx={{ color: `${colors.teal}` }} value={70} variant="indeterminate" />
+                                                    </Stack>
+                                                </TableCell>
+                                            ) : (
+                                                <TableBody>
+                                                    {data?.map((row: any, i: number) => (
+                                                        <TableRow key={i} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                            <TableCell component="th" scope="row">
+                                                                {row.date_paiement ? moment(row.date_paiement).format("DD-MM-YYYY") : "Aucun"}
+                                                            </TableCell>
+                                                            <TableCell align="right">{row.username}</TableCell>
+                                                            <TableCell align="right">{row.montant ?? "Aucun"}</TableCell>
+                                                            <TableCell align="right">{row.mois ? row.mois + " " + row.annee : "Aucun"}</TableCell>
+                                                            <TableCell align="right">
+                                                                <Stack alignItems={"end"} justifyContent={"end"} >
+                                                                    <Stack py={0.5} px={1.5} bgcolor={`${getColorPaiement(row.mode_paiement ?? "Non payé")}20`} borderRadius={50}>
+                                                                        <small style={{ color: `${getColorPaiement(row.mode_paiement ?? "Non payé")}`, letterSpacing: 0.5, fontSize: 12.5 }}>
+                                                                            {row.mode_paiement ?? "Non payé"}
+                                                                        </small>
+                                                                    </Stack>
+                                                                </Stack>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            )
+                                        }
                                     </Table>
-                                );
-                            }
-                        })()}
-                    </TableContainer>
-                </Stack>
-            </Stack>
+                                </TableContainer>
+                            </Stack>
+                        </Stack>
+                    );
+                }
+                if (index === 1) {
+                    return (<h4>Revenus</h4>)
+                }
+                if (index === 2) {
+                    return (<h4>Dépenses</h4>)
+                }
+                if (index === 3) {
+                    return (<h4>Dettes</h4>)
+                }
+            })()}
         </div>
     );
 };
+
 
 const a11yProps = (index: number) => {
     return {
