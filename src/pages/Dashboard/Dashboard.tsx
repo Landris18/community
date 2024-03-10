@@ -1,7 +1,10 @@
 import 'chart.js/auto';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import { Avatar, Divider, IconButton, Stack, Menu, Button, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import {
+    Avatar, Divider, IconButton, Stack, Menu,
+    Button, FormControl, InputLabel, Select, MenuItem, CircularProgress
+} from '@mui/material';
 import communityLogoDark from "/community-dark.svg"
 import { LuBarChart2 } from "react-icons/lu";
 import { HiOutlineUsers } from "react-icons/hi2";
@@ -15,6 +18,7 @@ import { GrMoney } from "react-icons/gr";
 import { Bar, Doughnut } from 'react-chartjs-2';
 import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';
 import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
+import { CiCircleInfo } from "react-icons/ci";
 import CustomTooltip from '../../components/CustomTooltip/CustomTooltip';
 import ConfirmationDialog from '../../components/ConfirmDialog/ConfirmDialog';
 import { removeToken } from '../../utility/utility';
@@ -63,6 +67,7 @@ export default function Dashboard() {
     const [stats, setStats] = useState<any>({});
     const [anneeStats, setAnneeStats] = useState(new Date().getFullYear());
     const [lstYears] = useState(getYearsBetween());
+    const [loadingStats, setLoadingStats] = useState<boolean>(false);
 
     let anneeFilterStats = anneeStats;
 
@@ -188,7 +193,9 @@ export default function Dashboard() {
         if (anneeStats !== event.target.value) {
             anneeFilterStats = event.target.value;
             setAnneeStats(event.target.value);
+            setLoadingStats(true);
             await queryResults[1].refetch();
+            setLoadingStats(false);
         }
     };
 
@@ -279,12 +286,12 @@ export default function Dashboard() {
                         </Drawer>
                         <Box component="main" sx={{ flexGrow: 1, bgcolor: '#fbfbfb', px: 10, pt: 4 }} height={"100vh"}>
                             <Stack width={"100%"}>
-                                <h1 className='m-0 lexend-bold'>Dashboard</h1>
-                                <small>Vous pouvez voir ici l'état budgétaire notre communauté</small>
-                                <Stack p={3} borderRadius={4} bgcolor={"white"} mt={4} gap={4.5}>
+                                <h1 className='m-0 lexend-bold'>Transactions</h1>
+                                <small>Vous pouvez voir ici nos transactions par mois</small>
+                                <Stack p={3} borderRadius={4} bgcolor={"white"} mt={3} gap={4.5}>
                                     <Stack direction={"row"} justifyContent={"space-between"} alignItems={"start"}>
-                                        <h4 className='m-0'>Statistique budgétaire</h4>
-                                        <FormControl sx={{ minWidth: 100 }} size="small">
+                                        <h4 className='m-0'>Statistique des transactions</h4>
+                                        <FormControl size="small">
                                             <InputLabel>Année</InputLabel>
                                             <Select
                                                 value={anneeStats}
@@ -299,7 +306,20 @@ export default function Dashboard() {
                                             </Select>
                                         </FormControl>
                                     </Stack>
-                                    <Bar id='stats-chart' options={options} data={statsChartData} />
+                                    {
+                                        loadingStats ? (
+                                            <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} pb={5}>
+                                                <CircularProgress size={60} sx={{ color: `${colors.teal}` }} value={70} variant="indeterminate" />
+                                            </Stack>
+                                        ) : !loadingStats && stats.revenus_total.length > 0 ? (
+                                            <Bar id='stats-chart' options={options} data={statsChartData} />
+                                        ) : (
+                                            <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} pb={5} gap={0.6}>
+                                                <CiCircleInfo size={60} color={`${colors.teal}`} />
+                                                <h4 className='m-0' style={{ color: `${colors.teal}` }}>Aucun données pour l'année {anneeStats}</h4>
+                                            </Stack>
+                                        )
+                                    }
                                 </Stack>
                             </Stack>
                         </Box>
@@ -367,7 +387,7 @@ export default function Dashboard() {
                                                         <TbMoneybag size={30} color='white' />
                                                         <Stack>
                                                             <small className='text-white'>Solde réel</small>
-                                                            <h3 className='m-0 text-white lexend-bold'>{formatNumber(totals.total_soldes_reel)} Ar</h3>
+                                                            <h4 className='m-0 text-white lexend-bold'>{formatNumber(totals.total_soldes_reel)} Ar</h4>
                                                         </Stack>
                                                     </Stack>
                                                 </Stack>
@@ -378,7 +398,7 @@ export default function Dashboard() {
                                                         <GrMoney size={30} color='white' />
                                                         <Stack>
                                                             <small className='text-white'>Solde comptable</small>
-                                                            <h3 className='m-0 text-white lexend-bold'>{formatNumber(totals.total_soldes)} Ar</h3>
+                                                            <h4 className='m-0 text-white lexend-bold'>{formatNumber(totals.total_soldes)} Ar</h4>
                                                         </Stack>
                                                     </Stack>
                                                 </Stack>
@@ -389,7 +409,7 @@ export default function Dashboard() {
                                                         <GiReceiveMoney size={30} color='white' />
                                                         <Stack>
                                                             <small className='text-white'>Dette</small>
-                                                            <h3 className='m-0 text-white lexend-bold'>{formatNumber(totals.total_dettes)}  Ar</h3>
+                                                            <h4 className='m-0 text-white lexend-bold'>{formatNumber(totals.total_dettes)}  Ar</h4>
                                                         </Stack>
                                                     </Stack>
                                                 </Stack>
