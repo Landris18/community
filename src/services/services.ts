@@ -64,4 +64,16 @@ export default class Service {
         });
         return res;
     }
+
+    static async getCotisations(annee: number, mois: string, onlyPaid: boolean) {
+        let res;
+        await axios.get(`${this.baseUrl}cotisations?annee=${annee}&mois=${mois}&only_paid=${onlyPaid}`, {
+            ...this.getBearerToken(),
+        }).then((response) => {
+            res = response.data;
+        }).catch((error) => {
+            throw error;
+        });
+        return res;
+    }
 }

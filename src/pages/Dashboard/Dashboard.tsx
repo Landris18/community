@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import {
     Avatar, Divider, IconButton, Stack, Menu,
-    Button, FormControl, InputLabel, Select, MenuItem, CircularProgress
+    Button, FormControl, InputLabel, Select, MenuItem, CircularProgress, Toolbar
 } from '@mui/material';
 import communityLogoDark from "/community-dark.svg"
 import { LuBarChart2 } from "react-icons/lu";
@@ -21,7 +21,7 @@ import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
 import { CiCircleInfo } from "react-icons/ci";
 import CustomTooltip from '../../components/CustomTooltip/CustomTooltip';
 import ConfirmationDialog from '../../components/ConfirmDialog/ConfirmDialog';
-import { removeToken } from '../../utility/utility';
+import { MONTHS, removeToken } from '../../utility/utility';
 import { useNavigate } from 'react-router-dom';
 import { useQueries } from 'react-query';
 import Service from '../../services/services';
@@ -40,6 +40,7 @@ Chart.defaults.font.family = "lexend";
 Chart.defaults.plugins.legend.position = "bottom";
 
 const DIALOG_DECONNEXION = "DIALOG_DECONNEXION";
+
 
 const getYearsBetween = () => {
     const currentYear = new Date().getFullYear();
@@ -66,11 +67,20 @@ export default function Dashboard() {
     const [allQueriesLoaded, setAllQueriesLoaded] = useState(false);
     const [totals, setTotals] = useState<any>({});
     const [stats, setStats] = useState<any>({});
-    const [anneeStats, setAnneeStats] = useState(new Date().getFullYear());
+    const [cotisations, setCotisations] = useState<any>({});
     const [lstYears] = useState(getYearsBetween());
-    const [loadingStats, setLoadingStats] = useState<boolean>(false);
+    const [loadingRefetch, setLoadingRefetch] = useState<boolean>(false);
+    const [loadingRefetchTab, setLoadingRefetchTab] = useState<boolean>(false);
 
+    // For global
+    const [anneeStats, setAnneeStats] = useState(new Date().getFullYear());
     let anneeFilterStats = anneeStats;
+
+    // For cotisations
+    const [moisCotisations, setMoisCotisations] = useState(MONTHS[new Date().getMonth()]);
+    let moisFilterCotisations = moisCotisations;
+    const [onlyPaid, setOnlyPaid] = useState(false);
+    let onlyPaidFilter = onlyPaid;
 
 
     /**
@@ -100,10 +110,21 @@ export default function Dashboard() {
             onError: () => {
                 toast.error("Problème de récuperation des stats");
             }
+        },
+        {
+            queryKey: 'cotisations',
+            retry: false,
+            refetch: false,
+            queryFn: () => Service.getCotisations(anneeFilterStats, moisFilterCotisations, onlyPaidFilter),
+            onSuccess: (data: any) => {
+                setCotisations(data.success.cotisations);
+            },
+            onError: () => {
+                toast.error("Problème de récuperation des cotisations");
+            }
         }
     ];
     const queryResults = useQueries(queries);
-
 
     /**
      * useEffects
@@ -180,10 +201,7 @@ export default function Dashboard() {
     }
 
     const getMonth = (obj: any) => {
-        const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-            'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
-        ];
-        return obj?.map((ob: any) => months[ob.mois - 1] || '');
+        return obj?.map((ob: any) => MONTHS[ob.mois - 1] || '');
     };
 
     const extractTotalMontant = (obj: any) => {
@@ -194,12 +212,32 @@ export default function Dashboard() {
         if (anneeStats !== event.target.value) {
             anneeFilterStats = event.target.value;
             setAnneeStats(event.target.value);
-            setLoadingStats(true);
+            setLoadingRefetch(true);
             await queryResults[1].refetch();
-            setLoadingStats(false);
+            await queryResults[2].refetch();
+            setLoadingRefetch(false);
         }
     };
 
+    const handleMoisChange = async (event: any) => {
+        if (moisCotisations !== event.target.value) {
+            moisFilterCotisations = event.target.value;
+            setMoisCotisations(event.target.value);
+            setLoadingRefetchTab(true);
+            await queryResults[2].refetch();
+            setLoadingRefetchTab(false);
+        }
+    };
+
+    const handleOnlyPaidChange = async (event: any) => {
+        if (onlyPaid !== event.target.checked) {
+            onlyPaidFilter = event.target.checked;
+            setOnlyPaid(event.target.checked);
+            setLoadingRefetchTab(true);
+            await queryResults[2].refetch();
+            setLoadingRefetchTab(false);
+        }
+    };
 
     /**
      * Charts
@@ -290,7 +328,7 @@ export default function Dashboard() {
                                 <Stack direction={"row"} justifyContent={"space-between"} alignItems={"end"}>
                                     <Stack>
                                         <h1 className='m-0 lexend-bold'>Transactions</h1>
-                                        <small>Vous pouvez voir ici nos transactions par mois</small>
+                                        <small>Vous pouvez voir ici nos transactions</small>
                                     </Stack>
                                     <FormControl size="small">
                                         <InputLabel>Année</InputLabel>
@@ -308,13 +346,13 @@ export default function Dashboard() {
                                     </FormControl>
                                 </Stack>
                                 <Stack p={3} borderRadius={4} bgcolor={"white"} mt={3} gap={4.5}>
-                                    <h4 className='m-0'>Statistique des transactions</h4>
+                                    <h4 className='m-0'>Statistique des transactions </h4>
                                     {
-                                        loadingStats ? (
+                                        loadingRefetch ? (
                                             <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} pb={5}>
                                                 <CircularProgress size={60} sx={{ color: `${colors.teal}` }} value={70} variant="indeterminate" />
                                             </Stack>
-                                        ) : !loadingStats && stats.revenus_total.length > 0 ? (
+                                        ) : !loadingRefetch && stats?.revenus_total?.length > 0 ? (
                                             <Bar id='stats-chart' options={options} data={statsChartData} />
                                         ) : (
                                             <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} pb={5} gap={0.6}>
@@ -324,10 +362,15 @@ export default function Dashboard() {
                                         )
                                     }
                                 </Stack>
-                                <Stack p={3} borderRadius={4} bgcolor={"white"} mt={3} gap={1}>
-                                    <h4 className='m-0'>Suivi financier</h4>
-                                    <TabMenu />
+                                <Stack p={3} borderRadius={4} bgcolor={"white"} mt={3} mb={4} gap={1}>
+                                    <h4 className='m-0'>Suivi financier </h4>
+                                    <TabMenu
+                                        cotisations={
+                                            { data: cotisations, valueInput: moisCotisations, valueSwitch: onlyPaid, changeMois: handleMoisChange, changeOnlyPaid: handleOnlyPaidChange, isLoading: loadingRefetchTab }
+                                        }
+                                    />
                                 </Stack>
+                                <Toolbar />
                             </Stack>
                         </Box>
                         <Drawer id='right-sidebar' sx={{ width: drawerWidthRight, flexShrink: 0, '& .MuiDrawer-paper': { width: drawerWidthRight, boxSizing: 'border-box' } }} variant="permanent" anchor="right">
@@ -382,45 +425,54 @@ export default function Dashboard() {
                                     <Stack width={"100%"} mt={1} gap={3.5}>
                                         <Stack gap={1} alignItems={"start"}>
                                             <h4 className='m-0'>Situation</h4>
-                                            <Stack direction={"row"} alignItems={"center"} gap={0.5} py={0.8} px={1.5} bgcolor={`${getStatus()?.colors}20`} borderRadius={50}>
+                                            <Stack py={0.8} px={1.5} bgcolor={`${getStatus()?.colors}20`} borderRadius={50}>
                                                 <small style={{ color: `${getStatus()?.colors}`, letterSpacing: 0.5, fontSize: 12.5 }}>{getStatus()?.status}</small>
                                             </Stack>
                                         </Stack>
                                         <Stack gap={1.5}>
                                             <h4 className='m-0'>Budget</h4>
-                                            <CustomTooltip title={"Revenus + cotisations - dépenses - dettes"}>
-                                                <Stack bgcolor={colors.teal} borderRadius={3} p={2}>
-                                                    <Stack direction={"row"} alignItems={"center"} gap={2.5}>
-                                                        <TbMoneybag size={30} color='white' />
-                                                        <Stack>
-                                                            <small className='text-white'>Solde réel</small>
-                                                            <h4 className='m-0 text-white lexend-bold'>{formatNumber(totals.total_soldes_reel)} Ar</h4>
-                                                        </Stack>
+                                            <Stack direction={"row"} bgcolor={colors.teal} borderRadius={3} p={2} justifyContent={"space-between"} alignItems={"center"}>
+                                                <Stack direction={"row"} alignItems={"center"} gap={1.5}>
+                                                    <TbMoneybag size={30} color='white' />
+                                                    <Stack>
+                                                        <small className='text-white'>Solde réel</small>
+                                                        <h4 className='m-0 text-white lexend-bold'>{formatNumber(totals.total_soldes_reel)} Ar</h4>
                                                     </Stack>
                                                 </Stack>
-                                            </CustomTooltip>
-                                            <CustomTooltip title={"Revenus + cotisations - depenses"}>
-                                                <Stack bgcolor={colors.blue} borderRadius={3} p={2}>
-                                                    <Stack direction={"row"} alignItems={"center"} gap={2.5}>
-                                                        <GrMoney size={30} color='white' />
-                                                        <Stack>
-                                                            <small className='text-white'>Solde comptable</small>
-                                                            <h4 className='m-0 text-white lexend-bold'>{formatNumber(totals.total_soldes)} Ar</h4>
-                                                        </Stack>
+                                                <CustomTooltip title={"Revenus + cotisations - dépenses - dettes"}>
+                                                    <IconButton>
+                                                        <CiCircleInfo size={20} color={"white"} />
+                                                    </IconButton>
+                                                </CustomTooltip>
+                                            </Stack>
+                                            <Stack direction={"row"} bgcolor={colors.blue} borderRadius={3} p={2} justifyContent={"space-between"} alignItems={"center"}>
+                                                <Stack direction={"row"} alignItems={"center"} gap={1.5}>
+                                                    <GrMoney size={30} color='white' />
+                                                    <Stack>
+                                                        <small className='text-white'>Solde comptable</small>
+                                                        <h4 className='m-0 text-white lexend-bold'>{formatNumber(totals.total_soldes)} Ar</h4>
                                                     </Stack>
                                                 </Stack>
-                                            </CustomTooltip>
-                                            <CustomTooltip title={"Dette"}>
-                                                <Stack bgcolor={colors.yellow} borderRadius={3} p={2}>
-                                                    <Stack direction={"row"} alignItems={"center"} gap={2.5}>
-                                                        <GiReceiveMoney size={30} color='white' />
-                                                        <Stack>
-                                                            <small className='text-white'>Dette</small>
-                                                            <h4 className='m-0 text-white lexend-bold'>{formatNumber(totals.total_dettes)}  Ar</h4>
-                                                        </Stack>
+                                                <CustomTooltip title={"Revenus + cotisations - depenses"}>
+                                                    <IconButton>
+                                                        <CiCircleInfo size={20} color={"white"} />
+                                                    </IconButton>
+                                                </CustomTooltip>
+                                            </Stack>
+                                            <Stack direction={"row"} bgcolor={colors.yellow} borderRadius={3} p={2} justifyContent={"space-between"} alignItems={"center"}>
+                                                <Stack direction={"row"} alignItems={"center"} gap={1.5}>
+                                                    <GiReceiveMoney size={30} color='white' />
+                                                    <Stack>
+                                                        <small className='text-white'>Dette</small>
+                                                        <h4 className='m-0 text-white lexend-bold'>{formatNumber(totals.total_dettes)}  Ar</h4>
                                                     </Stack>
                                                 </Stack>
-                                            </CustomTooltip>
+                                                <CustomTooltip title={"Dettes"}>
+                                                    <IconButton>
+                                                        <CiCircleInfo size={20} color={"white"} />
+                                                    </IconButton>
+                                                </CustomTooltip>
+                                            </Stack>
                                         </Stack>
                                         <Stack gap={1.5}>
                                             <h4 className='m-0'>Répartition</h4>

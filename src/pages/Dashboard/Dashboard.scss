@@ -28,6 +28,7 @@
 .css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root {
   font-family: "lexend" !important;
   color: #241f3195 !important;
+  font-size: 15px !important;
 }
 // For the menu items in select input
 
@@ -36,7 +37,8 @@
 */
 
 #main {
-  scrollbar-color: #55555517 #fbfbfb; /* For Firefox */
+  scrollbar-color: #e1e6ec #fbfbfb; /* For Firefox */
+  scrollbar-width: thin;
 
   /* For WebKit browsers (Chrome, Safari) */
   &::-webkit-scrollbar-track {
@@ -48,12 +50,13 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: #55555517;
+    background-color: #e1e6ec;
   }
 }
 
 #right-sidebar {
-  scrollbar-color: #55555517 #fbfbfb; /* For Firefox */
+  scrollbar-color: #e1e6ec00 #fbfbfb; /* For Firefox */
+  scrollbar-width: thin;
 
   /* For WebKit browsers (Chrome, Safari) */
   &::-webkit-scrollbar-track {
@@ -65,6 +68,6 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: #55555517;
+    background-color: #e1e6ec00;
   }
 }

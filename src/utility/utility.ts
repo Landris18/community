@@ -22,3 +22,7 @@ export const isTokenExpired = () => {
     if (!storedToken || !storedToken.userId) return true;
     return new Date() >= new Date(storedToken.expiresAt);
 };
+
+export const MONTHS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+    'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+];
