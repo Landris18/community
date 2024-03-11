@@ -3,7 +3,9 @@ import { getToken } from "../utility/utility";
 
 
 export default class Service {
-    static baseUrl: string = "https://cashbase-api.fly.dev/api/";
+    // static baseUrl: string = "https://cashbase-api.fly.dev/api/";
+    static baseUrl: string = "https://cashbase.onrender.com/api/";
+
 
     private static getBearerToken(): AxiosRequestConfig | {} {
         const accessToken = getToken();
@@ -22,6 +24,18 @@ export default class Service {
     static async login(credentials: { username: string, password: string }) {
         let res;
         await axios.post(`${this.baseUrl}login`, credentials).then((response) => {
+            res = response.data;
+        }).catch((error) => {
+            throw error;
+        });
+        return res;
+    }
+
+    static async getMembres() {
+        let res;
+        await axios.get(`${this.baseUrl}membres`, {
+            ...this.getBearerToken(),
+        }).then((response) => {
             res = response.data;
         }).catch((error) => {
             throw error;

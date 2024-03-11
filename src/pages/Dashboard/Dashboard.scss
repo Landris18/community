@@ -37,7 +37,7 @@
 */
 
 #main {
-  scrollbar-color: #e1e6ec #fbfbfb; /* For Firefox */
+  scrollbar-color: #e1e6ec00 #fbfbfb; /* For Firefox */
   scrollbar-width: thin;
 
   /* For WebKit browsers (Chrome, Safari) */
@@ -70,4 +70,14 @@
   &::-webkit-scrollbar-thumb {
     background-color: #e1e6ec00;
   }
+}
+
+.card-membre {
+  transition-duration: 1s;
+  cursor: pointer;
+}
+
+.card-membre:hover {
+  transition-duration: 1s;
+  transform: scale(1.1);
 }

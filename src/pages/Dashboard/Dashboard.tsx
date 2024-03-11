@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import {
     Avatar, Divider, IconButton, Stack, Menu,
-    Button, FormControl, InputLabel, Select, MenuItem, CircularProgress, Toolbar
+    Button, FormControl, InputLabel, Select, MenuItem, CircularProgress, Toolbar, Grid
 } from '@mui/material';
 import communityLogoDark from "/community-dark.svg"
 import { LuBarChart2 } from "react-icons/lu";
@@ -40,6 +40,7 @@ Chart.defaults.font.family = "lexend";
 Chart.defaults.plugins.legend.position = "bottom";
 
 const DIALOG_DECONNEXION = "DIALOG_DECONNEXION";
+const TRANSACTIONS = "TRANSACTIONS";
 
 
 const getYearsBetween = () => {
@@ -59,7 +60,7 @@ export default function Dashboard() {
     const navigate = useNavigate();
     const { user } = useContext(UserContext);
 
-    const [activeMenu, setActiveMenu] = useState("dashboard");
+    const [activeMenu, setActiveMenu] = useState(TRANSACTIONS);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
@@ -67,6 +68,7 @@ export default function Dashboard() {
     const [allQueriesLoaded, setAllQueriesLoaded] = useState(false);
     const [totals, setTotals] = useState<any>({});
     const [stats, setStats] = useState<any>({});
+    const [membres, setMembres] = useState<any>();
     const [cotisations, setCotisations] = useState<any>({});
     const [lstYears] = useState(getYearsBetween());
     const [loadingRefetch, setLoadingRefetch] = useState<boolean>(false);
@@ -122,7 +124,19 @@ export default function Dashboard() {
             onError: () => {
                 toast.error("Problème de récuperation des cotisations");
             }
-        }
+        },
+        {
+            queryKey: 'membres',
+            retry: false,
+            refetch: false,
+            queryFn: () => Service.getMembres(),
+            onSuccess: (data: any) => {
+                setMembres(data.success);
+            },
+            onError: () => {
+                toast.error("Problème de récuperation des membres");
+            }
+        },
     ];
     const queryResults = useQueries(queries);
 
@@ -297,6 +311,8 @@ export default function Dashboard() {
         },
     };
 
+    console.log(membres);
+
     return (
         <>
             {
@@ -310,72 +326,105 @@ export default function Dashboard() {
                                     <Box component={"img"} src={communityLogoDark} width={28} />
                                 </Stack>
                                 <Stack alignItems={"center"} gap={5}>
-                                    <CustomTooltip title={"Dashboard"}>
-                                        <IconButton onClick={() => setActiveMenu("dashboard")}>
-                                            <LuBarChart2 className='cursor-pointer' size={25} color={activeMenu === "dashboard" ? colors.dark : `${colors.dark}60`} />
+                                    <CustomTooltip title={"Transactions"}>
+                                        <IconButton onClick={() => setActiveMenu(TRANSACTIONS)}>
+                                            <LuBarChart2 className='cursor-pointer' size={25} color={activeMenu === TRANSACTIONS ? colors.dark : `${colors.dark}60`} />
                                         </IconButton>
                                     </CustomTooltip>
                                     <CustomTooltip title={"Membres"}>
                                         <IconButton onClick={() => setActiveMenu("info")}>
-                                            <HiOutlineUsers className='cursor-pointer' size={25} color={activeMenu !== "dashboard" ? colors.dark : `${colors.dark}60`} />
+                                            <HiOutlineUsers className='cursor-pointer' size={25} color={activeMenu !== TRANSACTIONS ? colors.dark : `${colors.dark}60`} />
                                         </IconButton>
                                     </CustomTooltip>
                                 </Stack>
                             </Stack>
                         </Drawer>
-                        <Box id='main' component="main" sx={{ flexGrow: 1, bgcolor: '#fbfbfb', px: 10, pt: 4, overflowY: "scroll" }} height={"100vh"}>
-                            <Stack width={"100%"}>
-                                <Stack direction={"row"} justifyContent={"space-between"} alignItems={"end"}>
-                                    <Stack>
-                                        <h1 className='m-0 lexend-bold'>Transactions</h1>
-                                        <small>Vous pouvez voir ici nos transactions</small>
-                                    </Stack>
-                                    <FormControl size="small">
-                                        <InputLabel>Année</InputLabel>
-                                        <Select
-                                            value={anneeGlobal}
-                                            label="Année"
-                                            onChange={handleChangeAnneeGlobal}
-                                        >
-                                            {
-                                                lstYears.map((year: number) => (
-                                                    <MenuItem key={year} value={year}>{year}</MenuItem>
-                                                ))
-                                            }
-                                        </Select>
-                                    </FormControl>
-                                </Stack>
-                                <Stack p={3} borderRadius={4} bgcolor={"white"} mt={3} gap={4.5}>
-                                    <h4 className='m-0'>Statistique des transactions </h4>
-                                    {
-                                        loadingRefetch ? (
-                                            <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} pb={5}>
-                                                <CircularProgress size={60} sx={{ color: `${colors.teal}` }} value={70} variant="indeterminate" />
+                        {(() => {
+                            if (activeMenu === TRANSACTIONS) {
+                                return (
+                                    <Box id='main' component="main" sx={{ flexGrow: 1, bgcolor: '#fbfbfb', px: 10, pt: 4, overflowY: "scroll" }} height={"100vh"}>
+                                        <Stack width={"100%"}>
+                                            <Stack direction={"row"} justifyContent={"space-between"} alignItems={"end"}>
+                                                <Stack>
+                                                    <h1 className='m-0 lexend-bold'>Transactions</h1>
+                                                    <small style={{ color: `${colors.dark}99` }}>Vous pouvez voir ici nos transactions</small>
+                                                </Stack>
+                                                <FormControl size="small">
+                                                    <InputLabel>Année</InputLabel>
+                                                    <Select
+                                                        value={anneeGlobal}
+                                                        label="Année"
+                                                        onChange={handleChangeAnneeGlobal}
+                                                    >
+                                                        {
+                                                            lstYears.map((year: number) => (
+                                                                <MenuItem key={year} value={year}>{year}</MenuItem>
+                                                            ))
+                                                        }
+                                                    </Select>
+                                                </FormControl>
                                             </Stack>
-                                        ) : !loadingRefetch && stats?.revenus_total?.length > 0 ? (
-                                            <Bar id='stats-chart' options={options} data={statsChartData} />
-                                        ) : (
-                                            <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} pb={5} gap={0.6}>
-                                                <CiCircleInfo size={60} color={`${colors.teal}`} />
-                                                <h4 className='m-0' style={{ color: `${colors.teal}` }}>Aucun données pour l'année {anneeGlobal}</h4>
+                                            <Stack p={3} borderRadius={4} bgcolor={"white"} mt={3} gap={4.5}>
+                                                <h4 className='m-0'>Statistique des transactions </h4>
+                                                {
+                                                    loadingRefetch ? (
+                                                        <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} pb={5}>
+                                                            <CircularProgress size={60} sx={{ color: `${colors.teal}` }} value={70} variant="indeterminate" />
+                                                        </Stack>
+                                                    ) : !loadingRefetch && stats?.revenus_total?.length > 0 ? (
+                                                        <Bar id='stats-chart' options={options} data={statsChartData} />
+                                                    ) : (
+                                                        <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} pb={5} gap={0.6}>
+                                                            <CiCircleInfo size={60} color={`${colors.teal}`} />
+                                                            <h4 className='m-0' style={{ color: `${colors.teal}` }}>Aucun données pour l'année {anneeGlobal}</h4>
+                                                        </Stack>
+                                                    )
+                                                }
                                             </Stack>
-                                        )
-                                    }
-                                </Stack>
-                                <Stack p={3} borderRadius={4} bgcolor={"white"} mt={3} mb={4} gap={1}>
-                                    <h4 className='m-0'>Suivi financier </h4>
-                                    <TabMenu
-                                        cotisations={
-                                            { data: cotisations, valueInput: moisCotisations, valueSwitch: onlyPaid, changeMois: handleMoisChange, changeOnlyPaid: handleOnlyPaidChange, isLoading: loadingRefetch || loadingRefetchTab }
-                                        }
-                                    />
-                                </Stack>
-                                <Toolbar />
-                            </Stack>
-                        </Box>
+                                            <Stack p={3} borderRadius={4} bgcolor={"white"} mt={3} mb={4} gap={1}>
+                                                <h4 className='m-0'>Suivi financier </h4>
+                                                <TabMenu
+                                                    cotisations={
+                                                        { data: cotisations, valueInput: moisCotisations, valueSwitch: onlyPaid, changeMois: handleMoisChange, changeOnlyPaid: handleOnlyPaidChange, isLoading: loadingRefetch || loadingRefetchTab }
+                                                    }
+                                                />
+                                            </Stack>
+                                        </Stack>
+                                        <Toolbar />
+                                    </Box>
+                                )
+                            } else {
+                                return (
+                                    <Box id='main' component="main" sx={{ flexGrow: 1, bgcolor: '#fbfbfb', px: 10, pt: 4, overflowY: "scroll" }} height={"100vh"}>
+                                        <Stack width={"100%"}>
+                                            <Stack direction={"row"} justifyContent={"space-between"} alignItems={"end"}>
+                                                <Stack>
+                                                    <h1 className='m-0 lexend-bold'>Membres</h1>
+                                                    <small style={{ color: `${colors.dark}99` }}>La liste des {membres?.length} membres de la communauté</small>
+                                                </Stack>
+                                            </Stack>
+                                            <Grid container spacing={3} alignItems={"center"} mt={3}>
+                                                {
+                                                    membres?.map((mb: any) => (
+                                                        <Grid container item xs={12} sm={6} md={3} key={mb.id}>
+                                                            <Stack bgcolor={"white"} width={"100%"} p={2} borderRadius={5} justifyContent={"center"} alignItems={"center"} gap={0.7} className='card-membre'>
+                                                                <Avatar src={mb?.avatar} sx={{ height: 100, width: 100 }} alt='avatar' />
+                                                                <h4 className='m-0'>{mb?.username}</h4>
+                                                                <small style={{ color: `${colors.dark}99` }}>{mb?.is_admin === 1 ? "Administrateur" : "Membre"}</small>
+                                                            </Stack>
+                                                        </Grid>
+                                                    ))
+                                                }
+                                            </Grid>
+                                        </Stack>
+                                        <Toolbar />
+                                    </Box>
+                                )
+                            }
+                        })()}
                         <Drawer id='right-sidebar' sx={{ width: drawerWidthRight, flexShrink: 0, '& .MuiDrawer-paper': { width: drawerWidthRight, boxSizing: 'border-box' } }} variant="permanent" anchor="right">
                             <Stack width={"100%"} height={"100%"} justifyContent={"space-between"} mt={4} pb={3}>
-                                <Stack px={8}>
+                                <Stack px={7}>
                                     <Stack width={"100%"} direction={"row"} justifyContent={"end"} alignItems={"center"} gap={0.7}>
                                         {
                                             isFullscreen ? (
@@ -429,7 +478,7 @@ export default function Dashboard() {
                                                 <small style={{ color: `${getStatus()?.colors}`, letterSpacing: 0.5, fontSize: 12.5 }}>{getStatus()?.status}</small>
                                             </Stack>
                                         </Stack>
-                                        <Stack gap={1.5}>
+                                        <Stack gap={1.8}>
                                             <h4 className='m-0'>Budget</h4>
                                             <Stack direction={"row"} bgcolor={colors.teal} borderRadius={3} p={2} justifyContent={"space-between"} alignItems={"center"}>
                                                 <Stack direction={"row"} alignItems={"center"} gap={1.5}>
@@ -497,7 +546,7 @@ export default function Dashboard() {
                                         </Stack>
                                     </Stack>
                                 </Stack>
-                                <Stack px={8}>
+                                <Stack px={8} pt={5}>
                                     <small className='text-center' style={{ color: `${colors.dark}95`, fontSize: 12.5 }}>
                                         Community 0.0.0-beta <br /> By Landry Manankoraisina
                                     </small>
