@@ -73,8 +73,8 @@ export default function Dashboard() {
     const [loadingRefetchTab, setLoadingRefetchTab] = useState<boolean>(false);
 
     // For global
-    const [anneeStats, setAnneeStats] = useState(new Date().getFullYear());
-    let anneeFilterStats = anneeStats;
+    const [anneeGlobal, setAnneeGlobal] = useState(new Date().getFullYear());
+    let anneeFilterStats = anneeGlobal;
 
     // For cotisations
     const [moisCotisations, setMoisCotisations] = useState(MONTHS[new Date().getMonth()]);
@@ -208,10 +208,10 @@ export default function Dashboard() {
         return obj?.map((ob: any) => ob.totalMontant || 0);
     };
 
-    const handleChangeAnneeStats = async (event: any) => {
-        if (anneeStats !== event.target.value) {
+    const handleChangeAnneeGlobal = async (event: any) => {
+        if (anneeGlobal !== event.target.value) {
             anneeFilterStats = event.target.value;
-            setAnneeStats(event.target.value);
+            setAnneeGlobal(event.target.value);
             setLoadingRefetch(true);
             await queryResults[1].refetch();
             await queryResults[2].refetch();
@@ -333,9 +333,9 @@ export default function Dashboard() {
                                     <FormControl size="small">
                                         <InputLabel>Année</InputLabel>
                                         <Select
-                                            value={anneeStats}
+                                            value={anneeGlobal}
                                             label="Année"
-                                            onChange={handleChangeAnneeStats}
+                                            onChange={handleChangeAnneeGlobal}
                                         >
                                             {
                                                 lstYears.map((year: number) => (
@@ -357,7 +357,7 @@ export default function Dashboard() {
                                         ) : (
                                             <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} pb={5} gap={0.6}>
                                                 <CiCircleInfo size={60} color={`${colors.teal}`} />
-                                                <h4 className='m-0' style={{ color: `${colors.teal}` }}>Aucun données pour l'année {anneeStats}</h4>
+                                                <h4 className='m-0' style={{ color: `${colors.teal}` }}>Aucun données pour l'année {anneeGlobal}</h4>
                                             </Stack>
                                         )
                                     }
@@ -366,7 +366,7 @@ export default function Dashboard() {
                                     <h4 className='m-0'>Suivi financier </h4>
                                     <TabMenu
                                         cotisations={
-                                            { data: cotisations, valueInput: moisCotisations, valueSwitch: onlyPaid, changeMois: handleMoisChange, changeOnlyPaid: handleOnlyPaidChange, isLoading: loadingRefetchTab }
+                                            { data: cotisations, valueInput: moisCotisations, valueSwitch: onlyPaid, changeMois: handleMoisChange, changeOnlyPaid: handleOnlyPaidChange, isLoading: loadingRefetch || loadingRefetchTab }
                                         }
                                     />
                                 </Stack>
@@ -388,9 +388,9 @@ export default function Dashboard() {
                                                 </IconButton>
                                             )
                                         }
-                                        <CustomTooltip title={user.username}>
+                                        <CustomTooltip title={user?.username}>
                                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                                <Avatar src={user.avatar} sizes='sm' alt='avatar' />
+                                                <Avatar src={user?.avatar} sizes='sm' alt='avatar' />
                                             </IconButton>
                                         </CustomTooltip>
                                         <Menu
@@ -410,9 +410,9 @@ export default function Dashboard() {
                                             onClose={() => handleCloseUserMenu()}
                                         >
                                             <Stack px={2} py={1}>
-                                                <p className='m-0 lexend-bold'>{user.username}</p>
+                                                <p className='m-0 lexend-bold'>{user?.username}</p>
                                                 <small className='m-0' style={{ color: `${colors.dark}95` }}>
-                                                    {user.is_admin === 1 ? "Admin" : "Utilisateur"}
+                                                    {user?.is_admin === 1 ? "Admin" : "Utilisateur"}
                                                 </small>
                                                 <Divider />
                                                 <Button variant="contained" className='logout-button' sx={{ mt: 2 }} onClick={() => { handleCloseUserMenu(); handleOpenDialog(DIALOG_DECONNEXION) }}

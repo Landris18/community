@@ -125,8 +125,8 @@ const TabPanel = (props: TabPanelProps) => {
                                                             <TableCell align="right">{row.mois ? row.mois + " " + row.annee : "Aucun"}</TableCell>
                                                             <TableCell align="right">
                                                                 <Stack alignItems={"end"} justifyContent={"end"} >
-                                                                    <Stack py={0.5} px={1.5} bgcolor={`${getColorPaiement(row.mode_paiement ?? "Non payé")}20`} borderRadius={50}>
-                                                                        <small style={{ color: `${getColorPaiement(row.mode_paiement ?? "Non payé")}`, letterSpacing: 0.5, fontSize: 12.5 }}>
+                                                                    <Stack py={0.3} px={1.5} bgcolor={`${getColorPaiement(row.mode_paiement ?? "Non payé")}`} borderRadius={50}>
+                                                                        <small style={{ color: `white`, fontSize: 12 }}>
                                                                             {row.mode_paiement ?? "Non payé"}
                                                                         </small>
                                                                     </Stack>
