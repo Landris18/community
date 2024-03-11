@@ -12,7 +12,7 @@ import colors from '../../colors/colors';
 import { useContext, useEffect, useState } from 'react';
 import UserContext from '../../contexts/UserContext';
 import { GiReceiveMoney } from "react-icons/gi";
-import { RiLogoutCircleRLine } from "react-icons/ri";
+import { BiLogOut } from "react-icons/bi";
 import { TbMoneybag } from "react-icons/tb";
 import { GrMoney } from "react-icons/gr";
 import { Bar, Doughnut } from 'react-chartjs-2';
@@ -411,12 +411,12 @@ export default function Dashboard() {
                                         >
                                             <Stack px={2} py={1}>
                                                 <p className='m-0 lexend-bold'>{user?.username}</p>
-                                                <small className='m-0' style={{ color: `${colors.dark}95` }}>
-                                                    {user?.is_admin === 1 ? "Admin" : "Utilisateur"}
+                                                <small className='m-0' style={{ color: `${colors.dark}95`, fontSize: 13.5 }}>
+                                                    {user?.is_admin === 1 ? "Administrateur" : "Membre"}
                                                 </small>
                                                 <Divider />
                                                 <Button variant="contained" className='logout-button' sx={{ mt: 2 }} onClick={() => { handleCloseUserMenu(); handleOpenDialog(DIALOG_DECONNEXION) }}
-                                                    startIcon={<RiLogoutCircleRLine size={15} style={{ color: "white" }} />}>
+                                                    startIcon={<BiLogOut size={15} style={{ color: "white" }} />}>
                                                     Se déconnecter
                                                 </Button>
                                             </Stack>
