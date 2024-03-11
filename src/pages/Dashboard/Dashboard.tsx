@@ -243,10 +243,10 @@ export default function Dashboard() {
      * Charts
     */
     const totalsChartData = {
-        labels: ['Solde comptable', 'Dette', 'Solde réel'],
+        labels: ['Solde comptable', 'Dette', totals.total_soldes_reel >= 0 ? 'Solde réel' : null].filter(item => item !== null),
         datasets: [
             {
-                data: [totals.total_soldes, totals.total_dettes, totals.total_soldes_reel],
+                data: [totals.total_soldes, totals.total_dettes, totals.total_soldes_reel >= 0 ? totals.total_soldes_reel : null].filter(item => item !== null),
                 backgroundColor: [`${colors.blue}`, `${colors.yellow}`, `${colors.teal}`],
                 hoverBorderColor: "white"
             },
