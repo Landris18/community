@@ -5,7 +5,7 @@ import {
     Avatar, Divider, IconButton, Stack, Menu,
     Button, FormControl, InputLabel, Select, MenuItem, CircularProgress, Toolbar, Grid
 } from '@mui/material';
-import communityLogoDark from "/community-dark.svg"
+import communityLogoDark from "../../assets/images/community-dark.svg";
 import { LuBarChart2 } from "react-icons/lu";
 import { HiOutlineUsers } from "react-icons/hi2";
 import colors from '../../colors/colors';
@@ -311,8 +311,6 @@ export default function Dashboard() {
         },
     };
 
-    console.log(membres);
-
     return (
         <>
             {
@@ -407,9 +405,9 @@ export default function Dashboard() {
                                                 {
                                                     membres?.map((mb: any) => (
                                                         <Grid container item xs={12} sm={6} md={3} key={mb.id}>
-                                                            <Stack bgcolor={"white"} width={"100%"} p={2} borderRadius={5} justifyContent={"center"} alignItems={"center"} gap={0.7} className='card-membre'>
+                                                            <Stack bgcolor={"white"} width={"100%"} p={2} borderRadius={5} justifyContent={"center"} alignItems={"center"} gap={0.6} className='card-membre'>
                                                                 <Avatar src={mb?.avatar} sx={{ height: 100, width: 100 }} alt='avatar' />
-                                                                <h4 className='m-0'>{mb?.username}</h4>
+                                                                <h5 className='m-0'>{mb?.username}</h5>
                                                                 <small style={{ color: `${colors.dark}99` }}>{mb?.is_admin === 1 ? "Administrateur" : "Membre"}</small>
                                                             </Stack>
                                                         </Grid>
