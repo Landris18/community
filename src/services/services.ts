@@ -88,4 +88,16 @@ export default class Service {
         });
         return res;
     }
+
+    static async getRevenus(annee: number, mois: string) {
+        let res;
+        await axios.get(`${this.baseUrl}cotisations?annee=${annee}&mois=${mois}`, {
+            ...this.getBearerToken(),
+        }).then((response) => {
+            res = response.data;
+        }).catch((error) => {
+            throw error;
+        });
+        return res;
+    }
 }

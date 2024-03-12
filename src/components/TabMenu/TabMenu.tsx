@@ -3,10 +3,9 @@ import * as React from 'react';
 import {
     Stack, styled, Box, Tab, Tabs, TableContainer,
     Table, TableHead, TableRow, TableCell, TableBody,
-    InputLabel, Select, FormControl, MenuItem, FormControlLabel, Switch, alpha, CircularProgress
+    FormControlLabel, Switch, alpha, CircularProgress
 } from '@mui/material';
 import colors from '../../colors/colors';
-import { MONTHS } from '../../utility/utility';
 import { CiCircleInfo } from "react-icons/ci";
 import "./TabMenu.scss";
 
@@ -16,9 +15,7 @@ interface TabPanelProps {
     index: number;
     value: number;
     data?: any;
-    valueInput?: string;
     valueSwitch?: boolean;
-    changeMois?: Function;
     changeOnlyPaid?: Function;
     isLoading?: boolean
 }
@@ -29,7 +26,7 @@ const StyledTab = styled(Tab)({
     }
 });
 
-const PinkSwitch = styled(Switch)(({ theme }) => ({
+const CustomSwitch = styled(Switch)(({ theme }) => ({
     '& .MuiSwitch-switchBase.Mui-checked': {
         color: `${colors.blue} !important`,
         '&:hover': {
@@ -46,7 +43,7 @@ const columns = [
 ];
 
 const TabPanel = (props: TabPanelProps) => {
-    const { value, index, data, valueInput, valueSwitch, changeMois, changeOnlyPaid, isLoading } = props;
+    const { value, index, data, valueSwitch, changeOnlyPaid, isLoading } = props;
     const cols = columns[index];
 
     const getColorPaiement = (mode: string) => {
@@ -68,24 +65,10 @@ const TabPanel = (props: TabPanelProps) => {
                 if (index === 0) {
                     return (
                         <Stack mt={1.5}>
-                            <Stack direction={"row"} width={"100%"} justifyContent={"start"} alignItems={"center"} gap={2}>
-                                <FormControl size="small">
-                                    <InputLabel>Mois</InputLabel>
-                                    <Select
-                                        value={valueInput ?? ""}
-                                        label="Mois"
-                                        onChange={changeMois as any}
-                                    >
-                                        {
-                                            MONTHS.map((mo: string) => (
-                                                <MenuItem key={mo} value={mo}>{mo}</MenuItem>
-                                            ))
-                                        }
-                                    </Select>
-                                </FormControl>
-                                <FormControlLabel control={<PinkSwitch checked={valueSwitch} onChange={changeOnlyPaid as any} />} label="Payée seulement" />
+                            <Stack width={"100%"} alignItems={"end"}>
+                                    <FormControlLabel control={<CustomSwitch size="small" checked={valueSwitch} onChange={changeOnlyPaid as any} />} label={"Payées"} />
                             </Stack>
-                            <Stack bgcolor={"#e1e6ec20"}>
+                            <Stack bgcolor={"#1976d204"}>
                                 <TableContainer sx={{ maxHeight: 450 }} >
                                     <Table sx={{ minWidth: 650 }} aria-label="simple table" stickyHeader>
                                         <TableHead>
@@ -166,7 +149,7 @@ const a11yProps = (index: number) => {
 
 export default function TabMenu(props: any) {
     const { cotisations } = props;
-    const { data, valueInput, valueSwitch, changeMois, changeOnlyPaid, isLoading } = cotisations;
+    const { data, valueSwitch, changeOnlyPaid, isLoading } = cotisations;
 
     const [value, setValue] = React.useState(0);
 
@@ -176,7 +159,7 @@ export default function TabMenu(props: any) {
 
     return (
         <Box sx={{ width: '100%' }}>
-            <Stack alignItems={"end"} width={"100%"}>
+            <Stack alignItems={"center"} width={"100%"}>
                 <Tabs
                     value={value}
                     variant="scrollable" scrollButtons allowScrollButtonsMobile
@@ -189,7 +172,7 @@ export default function TabMenu(props: any) {
                     <StyledTab label="Dettes" {...a11yProps(3)} className="tab-label" />
                 </Tabs>
             </Stack>
-            <TabPanel value={value} index={0} data={data} valueInput={valueInput} valueSwitch={valueSwitch} changeOnlyPaid={changeOnlyPaid} changeMois={changeMois} isLoading={isLoading} />
+            <TabPanel value={value} index={0} data={data} valueSwitch={valueSwitch} changeOnlyPaid={changeOnlyPaid} isLoading={isLoading} />
             <TabPanel value={value} index={1} />
             <TabPanel value={value} index={2} />
             <TabPanel value={value} index={3} />

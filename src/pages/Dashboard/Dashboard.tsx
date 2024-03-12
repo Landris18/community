@@ -380,10 +380,26 @@ export default function Dashboard() {
                                                 }
                                             </Stack>
                                             <Stack p={3} borderRadius={4} bgcolor={"white"} mt={3} mb={4} gap={1}>
-                                                <h4 className='m-0'>Suivi financier </h4>
+                                                <Stack direction={"row"} alignItems={"start"} justifyContent={"space-between"}>
+                                                    <h4 className='m-0'>Suivi financier </h4>
+                                                    <FormControl size="small">
+                                                        <InputLabel>Mois</InputLabel>
+                                                        <Select
+                                                            value={moisCotisations}
+                                                            label="Mois"
+                                                            onChange={handleMoisChange}
+                                                        >
+                                                            {
+                                                                MONTHS.map((mo: string) => (
+                                                                    <MenuItem key={mo} value={mo}>{mo}</MenuItem>
+                                                                ))
+                                                            }
+                                                        </Select>
+                                                    </FormControl>
+                                                </Stack>
                                                 <TabMenu
                                                     cotisations={
-                                                        { data: cotisations, valueInput: moisCotisations, valueSwitch: onlyPaid, changeMois: handleMoisChange, changeOnlyPaid: handleOnlyPaidChange, isLoading: loadingRefetch || loadingRefetchTab }
+                                                        { data: cotisations, valueSwitch: onlyPaid, changeOnlyPaid: handleOnlyPaidChange, isLoading: loadingRefetch || loadingRefetchTab }
                                                     }
                                                 />
                                             </Stack>
