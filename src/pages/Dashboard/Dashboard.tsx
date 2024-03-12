@@ -426,13 +426,17 @@ export default function Dashboard() {
                                     <Stack width={"100%"} direction={"row"} justifyContent={"end"} alignItems={"center"} gap={0.7}>
                                         {
                                             isFullscreen ? (
-                                                <IconButton onClick={() => toggleFullscreen()}>
-                                                    <MdFullscreenExit size={30} className='cursor-pointer' />
-                                                </IconButton>
+                                                <CustomTooltip title={"Mode normale"}>
+                                                    <IconButton onClick={() => toggleFullscreen()}>
+                                                        <MdFullscreenExit size={30} className='cursor-pointer' />
+                                                    </IconButton>
+                                                </CustomTooltip>
                                             ) : (
-                                                <IconButton onClick={() => toggleFullscreen()}>
-                                                    <MdFullscreen size={30} className='cursor-pointer' />
-                                                </IconButton>
+                                                <CustomTooltip title={"Mode plein écran"}>
+                                                    <IconButton onClick={() => toggleFullscreen()}>
+                                                        <MdFullscreen size={30} className='cursor-pointer' />
+                                                    </IconButton>
+                                                </CustomTooltip>
                                             )
                                         }
                                         <CustomTooltip title={user?.username}>

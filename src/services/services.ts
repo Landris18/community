@@ -16,8 +16,6 @@ export default class Service {
                 },
             };
         }
-        console.log(accessToken);
-
         return {};
     }
 
