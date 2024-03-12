@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import colors from '../../colors/colors';
 import { MONTHS } from '../../utility/utility';
+import { CiCircleInfo } from "react-icons/ci";
 import "./TabMenu.scss";
 
 
@@ -49,21 +50,11 @@ const TabPanel = (props: TabPanelProps) => {
     const cols = columns[index];
 
     const getColorPaiement = (mode: string) => {
-        if (mode === "Non payé") {
-            return colors.red;
-        }
-        if (mode === "Autres") {
-            return colors.teal;
-        }
-        if (mode === "Mvola") {
-            return colors.yellow;
-        }
-        if (mode === "Orange Money") {
-            return colors.orange;
-        }
-        if (mode === "En liquide") {
-            return colors.green;
-        }
+        if (mode === "Non payé") return colors.red;
+        if (mode === "Autres") return colors.teal;
+        if (mode === "Mvola") return colors.yellow;
+        if (mode === "Orange Money") return colors.orange;
+        if (mode === "En liquide") return colors.green;
     };
 
     return (
@@ -113,7 +104,14 @@ const TabPanel = (props: TabPanelProps) => {
                                                         <CircularProgress size={60} sx={{ color: `${colors.teal}` }} value={70} variant="indeterminate" />
                                                     </Stack>
                                                 </TableCell>
-                                            ) : (
+                                            ) : !isLoading && data?.length === 0 ? (
+                                                <TableCell colSpan={5}>
+                                                    <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} py={5} gap={0.6}>
+                                                        <CiCircleInfo size={60} color={`${colors.teal}`} />
+                                                        <h4 className='m-0 no-data-table' style={{ color: `${colors.teal}` }}>Aucun données pour ces filtres</h4>
+                                                    </Stack>
+                                                </TableCell>
+                                            ) : Array.isArray(data) && (
                                                 <TableBody>
                                                     {data?.map((row: any, i: number) => (
                                                         <TableRow key={i} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
