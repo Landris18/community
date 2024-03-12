@@ -2,8 +2,8 @@ import 'chart.js/auto';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import {
-    Avatar, Divider, IconButton, Stack, Menu,
-    Button, FormControl, InputLabel, Select, MenuItem, CircularProgress, Toolbar, Grid
+    Avatar, Divider, IconButton, Stack, Menu, Toolbar, Grid,
+    Button, FormControl, InputLabel, Select, MenuItem, CircularProgress
 } from '@mui/material';
 import communityLogoDark from "../../assets/images/community-dark.svg";
 import { LuBarChart2 } from "react-icons/lu";
@@ -74,13 +74,13 @@ export default function Dashboard() {
     const [loadingRefetch, setLoadingRefetch] = useState<boolean>(false);
     const [loadingRefetchTab, setLoadingRefetchTab] = useState<boolean>(false);
 
-    // For global
+    // Global filters
     const [anneeGlobal, setAnneeGlobal] = useState(new Date().getFullYear());
-    let anneeFilterStats = anneeGlobal;
+    let anneeFilterGlobal = anneeGlobal;
+    const [moisGlobal, setMoisGlobal] = useState(MONTHS[new Date().getMonth()]);
+    let moisFilterCotisations = moisGlobal;
 
-    // For cotisations
-    const [moisCotisations, setMoisCotisations] = useState(MONTHS[new Date().getMonth()]);
-    let moisFilterCotisations = moisCotisations;
+    // Cotisations filter
     const [onlyPaid, setOnlyPaid] = useState(false);
     let onlyPaidFilter = onlyPaid;
 
@@ -105,7 +105,7 @@ export default function Dashboard() {
             queryKey: 'stats',
             retry: false,
             refetch: false,
-            queryFn: () => Service.getStats(anneeFilterStats),
+            queryFn: () => Service.getStats(anneeFilterGlobal),
             onSuccess: (data: any) => {
                 setStats(data.success);
             },
@@ -117,7 +117,7 @@ export default function Dashboard() {
             queryKey: 'cotisations',
             retry: false,
             refetch: false,
-            queryFn: () => Service.getCotisations(anneeFilterStats, moisFilterCotisations, onlyPaidFilter),
+            queryFn: () => Service.getCotisations(anneeFilterGlobal, moisFilterCotisations, onlyPaidFilter),
             onSuccess: (data: any) => {
                 setCotisations(data.success.cotisations);
             },
@@ -149,7 +149,6 @@ export default function Dashboard() {
             setAllQueriesLoaded(true);
         }
     }, [queryResults]);
-
 
     /**
      * Some functions
@@ -224,7 +223,7 @@ export default function Dashboard() {
 
     const handleChangeAnneeGlobal = async (event: any) => {
         if (anneeGlobal !== event.target.value) {
-            anneeFilterStats = event.target.value;
+            anneeFilterGlobal = event.target.value;
             setAnneeGlobal(event.target.value);
             setLoadingRefetch(true);
             await queryResults[1].refetch();
@@ -234,9 +233,9 @@ export default function Dashboard() {
     };
 
     const handleMoisChange = async (event: any) => {
-        if (moisCotisations !== event.target.value) {
+        if (moisGlobal !== event.target.value) {
             moisFilterCotisations = event.target.value;
-            setMoisCotisations(event.target.value);
+            setMoisGlobal(event.target.value);
             setLoadingRefetchTab(true);
             await queryResults[2].refetch();
             setLoadingRefetchTab(false);
@@ -385,7 +384,7 @@ export default function Dashboard() {
                                                     <FormControl size="small">
                                                         <InputLabel>Mois</InputLabel>
                                                         <Select
-                                                            value={moisCotisations}
+                                                            value={moisGlobal}
                                                             label="Mois"
                                                             onChange={handleMoisChange}
                                                         >
