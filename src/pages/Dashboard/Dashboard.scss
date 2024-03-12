@@ -17,15 +17,15 @@
 }
 
 // For the menu items in select input
-.css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root.Mui-selected:hover {
+.Mui-selected:hover {
   background-color: #1976d20b !important;
 }
 
-.css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root.Mui-selected {
-  background-color: inherit !important;
+.Mui-selected {
+  background-color: #1976d20b !important;
 }
 
-.css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root {
+.MuiMenuItem-root {
   font-family: "lexend" !important;
   color: #241f3195 !important;
   font-size: 15px !important;
