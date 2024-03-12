@@ -1,0 +1,30 @@
+
+name: Deploy on Production
+
+on:
+  push:
+    branches: [ "main"]
+
+jobs:
+  CD:
+  
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v3
+
+    - name: SSH and deploy docker
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: iteam-s.mg
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: 22
+        script: |
+          cd ~/community
+          git pull
+          docker build -t community .
+          docker stop community || true
+          docker rm community || true
+          docker run -dp 2500:80 --name=community --restart=always -t community
