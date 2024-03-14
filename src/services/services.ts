@@ -91,7 +91,7 @@ export default class Service {
 
     static async getRevenus(annee: number, mois: string) {
         let res;
-        await axios.get(`${this.baseUrl}cotisations?annee=${annee}&mois=${mois}`, {
+        await axios.get(`${this.baseUrl}revenus?annee=${annee}&mois=${mois}`, {
             ...this.getBearerToken(),
         }).then((response) => {
             res = response.data;

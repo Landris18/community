@@ -70,6 +70,7 @@ export default function Dashboard() {
     const [stats, setStats] = useState<any>({});
     const [membres, setMembres] = useState<any>();
     const [cotisations, setCotisations] = useState<any>({});
+    const [revenus, setRevenus] = useState<any>({});
     const [lstYears] = useState(getYearsBetween());
     const [loadingRefetch, setLoadingRefetch] = useState<boolean>(false);
     const [loadingRefetchTab, setLoadingRefetchTab] = useState<boolean>(false);
@@ -123,6 +124,18 @@ export default function Dashboard() {
             },
             onError: () => {
                 toast.error("Problème de récuperation des cotisations");
+            }
+        },
+        {
+            queryKey: 'revenus',
+            retry: false,
+            refetch: false,
+            queryFn: () => Service.getRevenus(anneeFilterGlobal, moisFilterCotisations),
+            onSuccess: (data: any) => {
+                setRevenus(data.success.revenus);
+            },
+            onError: () => {
+                toast.error("Problème de récuperation des revenus");
             }
         },
         {
@@ -238,6 +251,7 @@ export default function Dashboard() {
             setMoisGlobal(event.target.value);
             setLoadingRefetchTab(true);
             await queryResults[2].refetch();
+            await queryResults[3].refetch();
             setLoadingRefetchTab(false);
         }
     };
@@ -398,7 +412,10 @@ export default function Dashboard() {
                                                 </Stack>
                                                 <TabMenu
                                                     cotisations={
-                                                        { data: cotisations, valueSwitch: onlyPaid, changeOnlyPaid: handleOnlyPaidChange, isLoading: loadingRefetch || loadingRefetchTab }
+                                                        { dataCotisations: cotisations, valueSwitchCotisations: onlyPaid, changeOnlyPaid: handleOnlyPaidChange, isLoadingCotisations: loadingRefetch || loadingRefetchTab }
+                                                    }
+                                                    revenus={
+                                                        { dataRevenus: revenus, isLoadingRevenus: loadingRefetch || loadingRefetchTab }
                                                     }
                                                 />
                                             </Stack>
