@@ -107,8 +107,10 @@ export default function Dashboard() {
             onSuccess: (data: any) => {
                 setTotals(data.success);
             },
-            onError: () => {
-                toast.error("Problème de récupération des totals");
+            onError: (_error: any) => {
+                if (_error?.response?.data?.error) {
+                    toast.error("Problème de récupération des analyses");
+                }
             }
         },
         {
@@ -119,8 +121,10 @@ export default function Dashboard() {
             onSuccess: (data: any) => {
                 setStats(data.success);
             },
-            onError: () => {
-                toast.error("Problème de récupération des stats");
+            onError: (_error: any) => {
+                if (_error?.response?.data?.error) {
+                    toast.error("Problème de récupération des statistiques");
+                }
             }
         },
         {
@@ -131,8 +135,10 @@ export default function Dashboard() {
             onSuccess: (data: any) => {
                 setCotisations(data.success.cotisations);
             },
-            onError: () => {
-                toast.error("Problème de récupération des cotisations");
+            onError: (_error: any) => {
+                if (_error?.response?.data?.error) {
+                    toast.error("Problème de récupération des cotisations");
+                }
             }
         },
         {
@@ -143,8 +149,10 @@ export default function Dashboard() {
             onSuccess: (data: any) => {
                 setRevenus(data.success.revenus);
             },
-            onError: () => {
-                toast.error("Problème de récupération des revenus");
+            onError: (_error: any) => {
+                if (_error?.response?.data?.error) {
+                    toast.error("Problème de récupération des revenus");
+                }
             }
         },
         {
@@ -155,8 +163,10 @@ export default function Dashboard() {
             onSuccess: (data: any) => {
                 setDepenses(data.success.depenses);
             },
-            onError: () => {
-                toast.error("Problème de récupération des dépenses");
+            onError: (_error: any) => {
+                if (_error?.response?.data?.error) {
+                    toast.error("Problème de récupération des dépenses");
+                }
             }
         },
         {
@@ -167,8 +177,10 @@ export default function Dashboard() {
             onSuccess: (data: any) => {
                 setDettes(data.success.dettes);
             },
-            onError: () => {
-                toast.error("Problème de récupération des dettes");
+            onError: (_error: any) => {
+                if (_error?.response?.data?.error) {
+                    toast.error("Problème de récupération des dettes");
+                }
             }
         },
         {
@@ -179,8 +191,10 @@ export default function Dashboard() {
             onSuccess: (data: any) => {
                 setMembres(data.success);
             },
-            onError: () => {
-                toast.error("Problème de récupération des membres");
+            onError: (_error: any) => {
+                if (_error?.response?.data?.error) {
+                    toast.error("Problème de récupération des membres");
+                }
             }
         },
     ];
