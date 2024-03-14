@@ -78,7 +78,7 @@ export default function Dashboard() {
     const [loadingRefetchTab, setLoadingRefetchTab] = useState<boolean>(false);
     const [loadingRefetchCotisations, setLoadingRefetchCotisations] = useState<boolean>(false);
     const [loadingRefetchDepenses, setLoadingRefetchDepenses] = useState<boolean>(false);
-
+    const [hasPaidCurrentMonth, setHasPaidCurrentMonth] = useState<boolean>(false);
 
     // Global filters
     const [anneeGlobal, setAnneeGlobal] = useState(new Date().getFullYear());
@@ -194,7 +194,20 @@ export default function Dashboard() {
         if (allLoaded) {
             setAllQueriesLoaded(true);
         }
-    }, [queryResults]);
+    }, [queryResults, user?.username]);
+
+    useEffect(() => {
+        const getStatusCotisationUser = (username: string) => {
+            if (cotisations && cotisations?.length > 0 && moisFilterGlobal === MONTHS[new Date().getMonth()] && anneeFilterGlobal === new Date().getFullYear()) {
+                const cotisation = cotisations.find((c: any) => c.username === username);
+                if (cotisation && cotisation?.montant) {
+                    setHasPaidCurrentMonth(true);
+                }
+            }
+        }
+        getStatusCotisationUser(user?.username);
+    }, [anneeFilterGlobal, cotisations, moisFilterGlobal, user?.username]);
+
 
     /**
      * Some functions
@@ -519,7 +532,7 @@ export default function Dashboard() {
                                         }
                                         <CustomTooltip title={user?.username}>
                                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                                <Avatar src={user?.avatar} sizes='sm' alt='avatar' />
+                                                <Avatar src={user?.avatar} sizes='md' alt={user?.username} sx={{ border: `4px solid ${hasPaidCurrentMonth ? "white" : colors.red}` }} />
                                             </IconButton>
                                         </CustomTooltip>
                                         <Menu
