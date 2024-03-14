@@ -16,7 +16,7 @@ interface TabPanelProps {
     value: number;
     data?: any;
     valueSwitch?: boolean;
-    changeOnlyPaid?: Function;
+    changeSwitch?: Function;
     isLoading?: boolean
 }
 
@@ -41,10 +41,11 @@ const CustomSwitch = styled(Switch)(({ theme }) => ({
 const columns = [
     ["Date de paiement", "Membre", "Montant en MGA", "Mois concerné", "Mode de paiement"],
     ["Date", "Provenance", "Montant en MGA", "Raison"],
+    ["Date d'emprunt", "Montant en MGA", "Raison"],
 ];
 
 const TabPanel = (props: TabPanelProps) => {
-    const { value, index, data, valueSwitch, changeOnlyPaid, isLoading } = props;
+    const { value, index, data, valueSwitch, changeSwitch, isLoading } = props;
     const cols = columns[index];
 
     const getColorPaiement = (mode: string) => {
@@ -67,7 +68,7 @@ const TabPanel = (props: TabPanelProps) => {
                     return (
                         <Stack mt={1.5}>
                             <Stack width={"100%"} alignItems={"end"}>
-                                <FormControlLabel control={<CustomSwitch size="small" checked={valueSwitch} onChange={changeOnlyPaid as any} />} label={"Payées"} />
+                                <FormControlLabel control={<CustomSwitch size="small" checked={valueSwitch} onChange={changeSwitch as any} />} label={"Payées"} />
                             </Stack>
                             <Stack bgcolor={"#1976d204"}>
                                 <TableContainer sx={{ maxHeight: 500 }} >
@@ -192,7 +193,64 @@ const TabPanel = (props: TabPanelProps) => {
                     );
                 }
                 if (index === 2) {
-                    return (<h4>Dépenses</h4>)
+                    return (
+                        <Stack mt={1.5}>
+                            <Stack width={"100%"} alignItems={"end"}>
+                                <FormControlLabel control={<CustomSwitch size="small" checked={valueSwitch} onChange={changeSwitch as any} />} label={"Paiement dette"} />
+                            </Stack>
+                            <Stack bgcolor={"#1976d204"}>
+                                <TableContainer sx={{ maxHeight: 500 }} >
+                                    <Table sx={{ minWidth: 650 }} aria-label="simple table" stickyHeader>
+                                        <TableHead>
+                                            <TableRow>
+                                                {
+                                                    cols.map((col: string, ic: number) => (<TableCell key={col} align={ic === 0 ? "left" : "right"}>
+                                                        {col}
+                                                    </TableCell>))
+                                                }
+                                            </TableRow>
+                                        </TableHead>
+                                        {
+                                            isLoading ? (
+                                                <TableBody>
+                                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                        <TableCell colSpan={3}>
+                                                            <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} py={5}>
+                                                                <CircularProgress size={60} sx={{ color: `${colors.teal}` }} value={70} variant="indeterminate" />
+                                                            </Stack>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                </TableBody>
+                                            ) : !isLoading && data?.length === 0 ? (
+                                                <TableBody>
+                                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                        <TableCell colSpan={3}>
+                                                            <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} py={5} gap={0.6}>
+                                                                <CiCircleInfo size={60} color={`${colors.teal}`} />
+                                                                <h4 className='m-0 no-data-table' style={{ color: `${colors.teal}` }}>Aucun données à afficher</h4>
+                                                            </Stack>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                </TableBody>
+                                            ) : Array.isArray(data) && (
+                                                <TableBody>
+                                                    {data?.map((row: any, i: number) => (
+                                                        <TableRow key={i} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                            <TableCell component="th" scope="row">
+                                                                {moment(row.date_creation).format("DD-MM-YYYY")}
+                                                            </TableCell>
+                                                            <TableCell align="right">{row.montant}</TableCell>
+                                                            <TableCell align="right">{row.raison}</TableCell>
+                                                        </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            )
+                                        }
+                                    </Table>
+                                </TableContainer>
+                            </Stack>
+                        </Stack>
+                    );
                 }
                 if (index === 3) {
                     return (<h4>Dettes</h4>)
@@ -212,9 +270,10 @@ const a11yProps = (index: number) => {
 
 
 export default function TabMenu(props: any) {
-    const { cotisations, revenus } = props;
+    const { cotisations, revenus, depenses } = props;
     const { dataCotisations, valueSwitchCotisations, changeOnlyPaid, isLoadingCotisations } = cotisations;
     const { dataRevenus, isLoadingRevenus } = revenus;
+    const { dataDepenses, valueSwitchDepenses, changeForDette, isLoadingDepenses } = depenses;
 
     const [value, setValue] = React.useState(0);
 
@@ -222,6 +281,8 @@ export default function TabMenu(props: any) {
         setValue(newValue);
     };
 
+    console.log(depenses);
+    
     return (
         <Box sx={{ width: '100%' }}>
             <Stack alignItems={"center"} width={"100%"}>
@@ -237,9 +298,9 @@ export default function TabMenu(props: any) {
                     <StyledTab label="Dettes" {...a11yProps(3)} className="tab-label" />
                 </Tabs>
             </Stack>
-            <TabPanel value={value} index={0} data={dataCotisations} valueSwitch={valueSwitchCotisations} changeOnlyPaid={changeOnlyPaid} isLoading={isLoadingCotisations} />
+            <TabPanel value={value} index={0} data={dataCotisations} valueSwitch={valueSwitchCotisations} changeSwitch={changeOnlyPaid} isLoading={isLoadingCotisations} />
             <TabPanel value={value} index={1} data={dataRevenus} isLoading={isLoadingRevenus} />
-            <TabPanel value={value} index={2} />
+            <TabPanel value={value} index={2} data={dataDepenses} valueSwitch={valueSwitchDepenses} changeSwitch={changeForDette} isLoading={isLoadingDepenses} />
             <TabPanel value={value} index={3} />
         </Box>
     );

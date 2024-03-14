@@ -100,4 +100,16 @@ export default class Service {
         });
         return res;
     }
+
+    static async getDepenses(annee: number, mois: string, forDette: boolean) {
+        let res;
+        await axios.get(`${this.baseUrl}depenses?annee=${annee}&mois=${mois}&for_dette=${forDette}`, {
+            ...this.getBearerToken(),
+        }).then((response) => {
+            res = response.data;
+        }).catch((error) => {
+            throw error;
+        });
+        return res;
+    }
 }

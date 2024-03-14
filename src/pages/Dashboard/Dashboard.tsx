@@ -71,19 +71,26 @@ export default function Dashboard() {
     const [membres, setMembres] = useState<any>();
     const [cotisations, setCotisations] = useState<any>({});
     const [revenus, setRevenus] = useState<any>({});
+    const [depenses, setDepenses] = useState<any>({});
     const [lstYears] = useState(getYearsBetween());
     const [loadingRefetch, setLoadingRefetch] = useState<boolean>(false);
     const [loadingRefetchTab, setLoadingRefetchTab] = useState<boolean>(false);
+    const [loadingRefetchCotisations, setLoadingRefetchCotisations] = useState<boolean>(false);
+    const [loadingRefetchDepenses, setLoadingRefetchDepenses] = useState<boolean>(false);
+
 
     // Global filters
     const [anneeGlobal, setAnneeGlobal] = useState(new Date().getFullYear());
     let anneeFilterGlobal = anneeGlobal;
     const [moisGlobal, setMoisGlobal] = useState(MONTHS[new Date().getMonth()]);
-    let moisFilterCotisations = moisGlobal;
+    let moisFilterGlobal = moisGlobal;
 
     // Cotisations filter
     const [onlyPaid, setOnlyPaid] = useState(false);
     let onlyPaidFilter = onlyPaid;
+
+    const [forDette, setForDette] = useState(false);
+    let forDetteFilter = onlyPaid;
 
 
     /**
@@ -99,7 +106,7 @@ export default function Dashboard() {
                 setTotals(data.success);
             },
             onError: () => {
-                toast.error("Problème de récuperation des totals");
+                toast.error("Problème de récupération des totals");
             }
         },
         {
@@ -111,31 +118,43 @@ export default function Dashboard() {
                 setStats(data.success);
             },
             onError: () => {
-                toast.error("Problème de récuperation des stats");
+                toast.error("Problème de récupération des stats");
             }
         },
         {
             queryKey: 'cotisations',
             retry: false,
             refetch: false,
-            queryFn: () => Service.getCotisations(anneeFilterGlobal, moisFilterCotisations, onlyPaidFilter),
+            queryFn: () => Service.getCotisations(anneeFilterGlobal, moisFilterGlobal, onlyPaidFilter),
             onSuccess: (data: any) => {
                 setCotisations(data.success.cotisations);
             },
             onError: () => {
-                toast.error("Problème de récuperation des cotisations");
+                toast.error("Problème de récupération des cotisations");
             }
         },
         {
             queryKey: 'revenus',
             retry: false,
             refetch: false,
-            queryFn: () => Service.getRevenus(anneeFilterGlobal, moisFilterCotisations),
+            queryFn: () => Service.getRevenus(anneeFilterGlobal, moisFilterGlobal),
             onSuccess: (data: any) => {
                 setRevenus(data.success.revenus);
             },
             onError: () => {
-                toast.error("Problème de récuperation des revenus");
+                toast.error("Problème de récupération des revenus");
+            }
+        },
+        {
+            queryKey: 'depenses',
+            retry: false,
+            refetch: false,
+            queryFn: () => Service.getDepenses(anneeFilterGlobal, moisFilterGlobal, forDetteFilter),
+            onSuccess: (data: any) => {
+                setDepenses(data.success.depenses);
+            },
+            onError: () => {
+                toast.error("Problème de récupération des dépenses");
             }
         },
         {
@@ -147,7 +166,7 @@ export default function Dashboard() {
                 setMembres(data.success);
             },
             onError: () => {
-                toast.error("Problème de récuperation des membres");
+                toast.error("Problème de récupération des membres");
             }
         },
     ];
@@ -247,11 +266,12 @@ export default function Dashboard() {
 
     const handleMoisChange = async (event: any) => {
         if (moisGlobal !== event.target.value) {
-            moisFilterCotisations = event.target.value;
+            moisFilterGlobal = event.target.value;
             setMoisGlobal(event.target.value);
             setLoadingRefetchTab(true);
             await queryResults[2].refetch();
             await queryResults[3].refetch();
+            await queryResults[4].refetch();
             setLoadingRefetchTab(false);
         }
     };
@@ -260,9 +280,19 @@ export default function Dashboard() {
         if (onlyPaid !== event.target.checked) {
             onlyPaidFilter = event.target.checked;
             setOnlyPaid(event.target.checked);
-            setLoadingRefetchTab(true);
+            setLoadingRefetchCotisations(true);
             await queryResults[2].refetch();
-            setLoadingRefetchTab(false);
+            setLoadingRefetchCotisations(false);
+        }
+    };
+
+    const handleForDetteChange = async (event: any) => {
+        if (forDette !== event.target.checked) {
+            forDetteFilter = event.target.checked;
+            setForDette(event.target.checked);
+            setLoadingRefetchDepenses(true);
+            await queryResults[4].refetch();
+            setLoadingRefetchDepenses(false);
         }
     };
 
@@ -412,10 +442,13 @@ export default function Dashboard() {
                                                 </Stack>
                                                 <TabMenu
                                                     cotisations={
-                                                        { dataCotisations: cotisations, valueSwitchCotisations: onlyPaid, changeOnlyPaid: handleOnlyPaidChange, isLoadingCotisations: loadingRefetch || loadingRefetchTab }
+                                                        { dataCotisations: cotisations, valueSwitchCotisations: onlyPaid, changeOnlyPaid: handleOnlyPaidChange, isLoadingCotisations: loadingRefetch || loadingRefetchTab || loadingRefetchCotisations }
                                                     }
                                                     revenus={
                                                         { dataRevenus: revenus, isLoadingRevenus: loadingRefetch || loadingRefetchTab }
+                                                    }
+                                                    depenses={
+                                                        { dataDepenses: depenses, valueSwitchDepenses: forDette, changeForDette: handleForDetteChange, isLoadingDepenses: loadingRefetch || loadingRefetchTab || loadingRefetchDepenses }
                                                     }
                                                 />
                                             </Stack>
