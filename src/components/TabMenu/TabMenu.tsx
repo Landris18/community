@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import colors from '../../colors/colors';
 import { CiCircleInfo } from "react-icons/ci";
+import { formatNumber } from "../../utility/utility";
 import "./TabMenu.scss";
 
 
@@ -41,7 +42,8 @@ const CustomSwitch = styled(Switch)(({ theme }) => ({
 const columns = [
     ["Date de paiement", "Membre", "Montant en MGA", "Mois concerné", "Mode de paiement"],
     ["Date", "Provenance", "Montant en MGA", "Raison"],
-    ["Date d'emprunt", "Montant en MGA", "Raison"],
+    ["Date", "Montant en MGA", "Raison"],
+    ["Date d'emprunt", "Montant en MGA", "Débiteur", "Raison", "Statut"]
 ];
 
 const TabPanel = (props: TabPanelProps) => {
@@ -49,11 +51,16 @@ const TabPanel = (props: TabPanelProps) => {
     const cols = columns[index];
 
     const getColorPaiement = (mode: string) => {
-        if (mode === "Non payé") return colors.red;
+        if (mode === "Non payée") return colors.red;
         if (mode === "Autres") return colors.teal;
         if (mode === "Mvola") return colors.yellow;
         if (mode === "Orange Money") return colors.orange;
         if (mode === "En liquide") return colors.green;
+    };
+
+    const getColorStatus = (isPaye: number) => {
+        if (isPaye === 0) return colors.red;
+        if (isPaye === 1) return colors.green;
     };
 
     return (
@@ -112,13 +119,13 @@ const TabPanel = (props: TabPanelProps) => {
                                                                 {row.date_paiement ? moment(row.date_paiement).format("DD-MM-YYYY") : "Aucun"}
                                                             </TableCell>
                                                             <TableCell align="right">{row.username}</TableCell>
-                                                            <TableCell align="right">{row.montant ?? "Aucun"}</TableCell>
+                                                            <TableCell align="right">{row.montant ? formatNumber(row.montant) : "Aucun"}</TableCell>
                                                             <TableCell align="right">{row.mois ? row.mois + " " + row.annee : "Aucun"}</TableCell>
                                                             <TableCell align="right">
                                                                 <Stack alignItems={"end"} justifyContent={"end"} >
-                                                                    <Stack py={0.3} px={1.5} bgcolor={`${getColorPaiement(row.mode_paiement ?? "Non payé")}`} borderRadius={50}>
+                                                                    <Stack py={0.3} px={1.5} bgcolor={`${getColorPaiement(row.mode_paiement ?? "Non payée")}`} borderRadius={50}>
                                                                         <small style={{ color: `white`, fontSize: 12 }}>
-                                                                            {row.mode_paiement ?? "Non payé"}
+                                                                            {row.mode_paiement ?? "Non payée"}
                                                                         </small>
                                                                     </Stack>
                                                                 </Stack>
@@ -178,9 +185,9 @@ const TabPanel = (props: TabPanelProps) => {
                                                             <TableCell component="th" scope="row">
                                                                 {moment(row.date_creation).format("DD-MM-YYYY")}
                                                             </TableCell>
-                                                            <TableCell align="right">{row.provenance ?? "Auncun"}</TableCell>
-                                                            <TableCell align="right">{row.montant}</TableCell>
-                                                            <TableCell align="right">{row.raions ?? "Aucun"}</TableCell>
+                                                            <TableCell align="right">{row.provenance ?? "Aucun"}</TableCell>
+                                                            <TableCell align="right">{formatNumber(row.montant)}</TableCell>
+                                                            <TableCell align="right">{row.raison ?? "Aucun"}</TableCell>
                                                         </TableRow>
                                                     ))}
                                                 </TableBody>
@@ -239,7 +246,7 @@ const TabPanel = (props: TabPanelProps) => {
                                                             <TableCell component="th" scope="row">
                                                                 {moment(row.date_creation).format("DD-MM-YYYY")}
                                                             </TableCell>
-                                                            <TableCell align="right">{row.montant}</TableCell>
+                                                            <TableCell align="right">{formatNumber(row.montant)}</TableCell>
                                                             <TableCell align="right">{row.raison}</TableCell>
                                                         </TableRow>
                                                     ))}
@@ -253,7 +260,66 @@ const TabPanel = (props: TabPanelProps) => {
                     );
                 }
                 if (index === 3) {
-                    return (<h4>Dettes</h4>)
+                    return (
+                        <Stack mt={1.5}>
+                            <Stack width={"100%"} alignItems={"start"}>
+                                <small className="lexend-light" style={{ fontSize: 13.5, color: colors.teal, fontStyle: "italic" }}>
+                                    La liste ci-dessous n'est pas filtrée et ne peut pas être filtrée
+                                </small>
+                            </Stack>
+                            <Stack bgcolor={"#1976d204"} mt={1}>
+                                <TableContainer sx={{ maxHeight: 500 }} >
+                                    <Table sx={{ minWidth: 650 }} aria-label="simple table" stickyHeader>
+                                        <TableHead>
+                                            <TableRow>
+                                                {
+                                                    cols.map((col: string, ic: number) => (<TableCell key={col} align={ic === 0 ? "left" : "right"}>
+                                                        {col}
+                                                    </TableCell>))
+                                                }
+                                            </TableRow>
+                                        </TableHead>
+                                        {
+                                            data?.length === 0 ? (
+                                                <TableBody>
+                                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                        <TableCell colSpan={5}>
+                                                            <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} py={5} gap={0.6}>
+                                                                <CiCircleInfo size={60} color={`${colors.teal}`} />
+                                                                <h4 className='m-0 no-data-table' style={{ color: `${colors.teal}` }}>Aucun données à afficher</h4>
+                                                            </Stack>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                </TableBody>
+                                            ) : Array.isArray(data) && (
+                                                <TableBody>
+                                                    {data?.map((row: any, i: number) => (
+                                                        <TableRow key={i} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                            <TableCell component="th" scope="row">
+                                                                {moment(row.date_creation).format("DD-MM-YYYY")}
+                                                            </TableCell>
+                                                            <TableCell align="right">{formatNumber(row.montant)}</TableCell>
+                                                            <TableCell align="right">{row.debiteur}</TableCell>
+                                                            <TableCell align="right">{row.raison ?? "Aucune"}</TableCell>
+                                                            <TableCell align="right">
+                                                                <Stack alignItems={"end"} justifyContent={"end"} >
+                                                                    <Stack py={0.3} px={1.5} bgcolor={`${getColorStatus(row.is_paye)}`} borderRadius={50}>
+                                                                        <small style={{ color: `white`, fontSize: 12 }}>
+                                                                            {row.is_paye > 0 ? "Remboursée" : "Active"}
+                                                                        </small>
+                                                                    </Stack>
+                                                                </Stack>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            )
+                                        }
+                                    </Table>
+                                </TableContainer>
+                            </Stack>
+                        </Stack>
+                    );
                 }
             })()}
         </div>
@@ -270,10 +336,11 @@ const a11yProps = (index: number) => {
 
 
 export default function TabMenu(props: any) {
-    const { cotisations, revenus, depenses } = props;
+    const { cotisations, revenus, depenses, dettes } = props;
     const { dataCotisations, valueSwitchCotisations, changeOnlyPaid, isLoadingCotisations } = cotisations;
     const { dataRevenus, isLoadingRevenus } = revenus;
     const { dataDepenses, valueSwitchDepenses, changeForDette, isLoadingDepenses } = depenses;
+    const { dataDettes } = dettes;
 
     const [value, setValue] = React.useState(0);
 
@@ -281,8 +348,7 @@ export default function TabMenu(props: any) {
         setValue(newValue);
     };
 
-    console.log(depenses);
-    
+
     return (
         <Box sx={{ width: '100%' }}>
             <Stack alignItems={"center"} width={"100%"}>
@@ -301,7 +367,7 @@ export default function TabMenu(props: any) {
             <TabPanel value={value} index={0} data={dataCotisations} valueSwitch={valueSwitchCotisations} changeSwitch={changeOnlyPaid} isLoading={isLoadingCotisations} />
             <TabPanel value={value} index={1} data={dataRevenus} isLoading={isLoadingRevenus} />
             <TabPanel value={value} index={2} data={dataDepenses} valueSwitch={valueSwitchDepenses} changeSwitch={changeForDette} isLoading={isLoadingDepenses} />
-            <TabPanel value={value} index={3} />
+            <TabPanel value={value} index={3} data={dataDettes} />
         </Box>
     );
 }

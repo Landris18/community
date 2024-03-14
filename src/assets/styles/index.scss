@@ -14,6 +14,12 @@
     url(../fonts/Lexend/Lexend-Black.ttf) format("woff");
 }
 
+@font-face {
+  font-family: "lexend-light";
+  src: local("lexend-light"),
+    url(../fonts/Lexend/Lexend-Light.ttf) format("woff");
+}
+
 body {
   font-family: "lexend", system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -26,7 +32,8 @@ body {
 }
 
 .lexend-bold,
-.lexend-black {
+.lexend-black,
+.lexend-light {
   font-family: inherit;
 }
 
@@ -36,6 +43,10 @@ body {
 
 .lexend-black {
   font-family: "lexend-black", system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.lexend-light {
+  font-family: "lexend-light", system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
 h1,

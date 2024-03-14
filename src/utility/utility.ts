@@ -26,3 +26,7 @@ export const isTokenExpired = () => {
 export const MONTHS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
     'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
 ];
+
+export const formatNumber = (number: number) => {
+    return number?.toLocaleString().replace(/,/g, ' ');
+};

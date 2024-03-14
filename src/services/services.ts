@@ -112,4 +112,16 @@ export default class Service {
         });
         return res;
     }
+
+    static async getDettes() {
+        let res;
+        await axios.get(`${this.baseUrl}dettes`, {
+            ...this.getBearerToken(),
+        }).then((response) => {
+            res = response.data;
+        }).catch((error) => {
+            throw error;
+        });
+        return res;
+    }
 }

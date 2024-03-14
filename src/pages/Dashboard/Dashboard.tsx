@@ -21,7 +21,7 @@ import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
 import { CiCircleInfo } from "react-icons/ci";
 import CustomTooltip from '../../components/CustomTooltip/CustomTooltip';
 import ConfirmationDialog from '../../components/ConfirmDialog/ConfirmDialog';
-import { MONTHS, removeToken } from '../../utility/utility';
+import { MONTHS, formatNumber, removeToken } from '../../utility/utility';
 import { useNavigate } from 'react-router-dom';
 import { useQueries } from 'react-query';
 import Service from '../../services/services';
@@ -72,6 +72,7 @@ export default function Dashboard() {
     const [cotisations, setCotisations] = useState<any>({});
     const [revenus, setRevenus] = useState<any>({});
     const [depenses, setDepenses] = useState<any>({});
+    const [dettes, setDettes] = useState<any>({});
     const [lstYears] = useState(getYearsBetween());
     const [loadingRefetch, setLoadingRefetch] = useState<boolean>(false);
     const [loadingRefetchTab, setLoadingRefetchTab] = useState<boolean>(false);
@@ -89,6 +90,7 @@ export default function Dashboard() {
     const [onlyPaid, setOnlyPaid] = useState(false);
     let onlyPaidFilter = onlyPaid;
 
+    // Dépenses filter
     const [forDette, setForDette] = useState(false);
     let forDetteFilter = onlyPaid;
 
@@ -155,6 +157,18 @@ export default function Dashboard() {
             },
             onError: () => {
                 toast.error("Problème de récupération des dépenses");
+            }
+        },
+        {
+            queryKey: 'dettes',
+            retry: false,
+            refetch: false,
+            queryFn: () => Service.getDettes(),
+            onSuccess: (data: any) => {
+                setDettes(data.success.dettes);
+            },
+            onError: () => {
+                toast.error("Problème de récupération des dettes");
             }
         },
         {
@@ -227,10 +241,6 @@ export default function Dashboard() {
     const logout = () => {
         removeToken();
         navigate("/", { replace: true });
-    }
-
-    const formatNumber = (number: number) => {
-        return number?.toLocaleString().replace(/,/g, ' ');
     }
 
     const getStatus = () => {
@@ -449,6 +459,9 @@ export default function Dashboard() {
                                                     }
                                                     depenses={
                                                         { dataDepenses: depenses, valueSwitchDepenses: forDette, changeForDette: handleForDetteChange, isLoadingDepenses: loadingRefetch || loadingRefetchTab || loadingRefetchDepenses }
+                                                    }
+                                                    dettes={
+                                                        { dataDettes: dettes }
                                                     }
                                                 />
                                             </Stack>
