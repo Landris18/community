@@ -54,7 +54,7 @@ const TabPanel = (props: TabPanelProps) => {
         if (mode === "Non payée") return colors.red;
         if (mode === "Autres") return colors.teal;
         if (mode === "Mvola") return colors.yellow;
-        if (mode === "Orange Money") return colors.orange;
+        if (mode === "Orange") return colors.orange;
         if (mode === "En liquide") return colors.green;
     };
 
@@ -79,7 +79,7 @@ const TabPanel = (props: TabPanelProps) => {
                             </Stack>
                             <Stack bgcolor={"#1976d204"}>
                                 <TableContainer sx={{ maxHeight: 500 }} >
-                                    <Table sx={{ minWidth: 650 }} aria-label="simple table" stickyHeader>
+                                    <Table sx={{ minWidth: 550 }} aria-label="simple table" stickyHeader>
                                         <TableHead>
                                             <TableRow>
                                                 {
@@ -146,7 +146,7 @@ const TabPanel = (props: TabPanelProps) => {
                         <Stack mt={1.5}>
                             <Stack bgcolor={"#1976d204"}>
                                 <TableContainer sx={{ maxHeight: 500 }} >
-                                    <Table sx={{ minWidth: 650 }} aria-label="simple table" stickyHeader>
+                                    <Table sx={{ minWidth: 550 }} aria-label="simple table" stickyHeader>
                                         <TableHead>
                                             <TableRow>
                                                 {
@@ -207,7 +207,7 @@ const TabPanel = (props: TabPanelProps) => {
                             </Stack>
                             <Stack bgcolor={"#1976d204"}>
                                 <TableContainer sx={{ maxHeight: 500 }} >
-                                    <Table sx={{ minWidth: 650 }} aria-label="simple table" stickyHeader>
+                                    <Table sx={{ minWidth: 550 }} aria-label="simple table" stickyHeader>
                                         <TableHead>
                                             <TableRow>
                                                 {
@@ -269,7 +269,7 @@ const TabPanel = (props: TabPanelProps) => {
                             </Stack>
                             <Stack bgcolor={"#1976d204"} mt={1}>
                                 <TableContainer sx={{ maxHeight: 500 }} >
-                                    <Table sx={{ minWidth: 650 }} aria-label="simple table" stickyHeader>
+                                    <Table sx={{ minWidth: 550 }} aria-label="simple table" stickyHeader>
                                         <TableHead>
                                             <TableRow>
                                                 {

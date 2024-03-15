@@ -33,7 +33,7 @@ import './Dashboard.scss';
 
 
 const drawerWidth = 100;
-const drawerWidthRight = 450;
+const drawerWidthRight = 400;
 
 Chart.register(ArcElement, Tooltip, Legend);
 Chart.defaults.font.family = "lexend";
@@ -420,7 +420,7 @@ export default function Dashboard() {
                         {(() => {
                             if (activeMenu === TRANSACTIONS) {
                                 return (
-                                    <Box id='main' component="main" sx={{ flexGrow: 1, bgcolor: '#fbfbfb', px: 10, pt: 4, overflowY: "scroll" }} height={"100vh"}>
+                                    <Box id='main' component="main" sx={{ flexGrow: 1, bgcolor: '#fbfbfb', px: 6, pt: 4, overflowY: "scroll" }} height={"100vh"}>
                                         <Stack width={"100%"}>
                                             <Stack direction={"row"} justifyContent={"space-between"} alignItems={"end"}>
                                                 <Stack>
@@ -498,7 +498,7 @@ export default function Dashboard() {
                                 )
                             } else {
                                 return (
-                                    <Box id='main' component="main" sx={{ flexGrow: 1, bgcolor: '#fbfbfb', px: 10, pt: 4, overflowY: "scroll" }} height={"100vh"}>
+                                    <Box id='main' component="main" sx={{ flexGrow: 1, bgcolor: '#fbfbfb', px: 6, pt: 4, overflowY: "scroll" }} height={"100vh"}>
                                         <Stack width={"100%"}>
                                             <Stack direction={"row"} justifyContent={"space-between"} alignItems={"end"}>
                                                 <Stack>
@@ -527,7 +527,7 @@ export default function Dashboard() {
                         })()}
                         <Drawer id='right-sidebar' sx={{ width: drawerWidthRight, flexShrink: 0, '& .MuiDrawer-paper': { width: drawerWidthRight, boxSizing: 'border-box' } }} variant="permanent" anchor="right">
                             <Stack width={"100%"} height={"100%"} justifyContent={"space-between"} mt={4} pb={3}>
-                                <Stack px={7}>
+                                <Stack px={6}>
                                     <Stack width={"100%"} direction={"row"} justifyContent={"end"} alignItems={"center"} gap={0.7}>
                                         {
                                             isFullscreen ? (
