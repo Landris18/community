@@ -7,15 +7,6 @@
   border-radius: 7px !important;
 }
 
-.logout-button {
-  text-transform: none !important;
-  font-family: "lexend" !important;
-  background-color: #f12533 !important;
-  box-shadow: none !important;
-  border-radius: 50px !important;
-  padding: 5px 15px 5px 15px !important;
-}
-
 // For the menu items in select input
 .Mui-selected:hover {
   background-color: #1976d20b !important;
@@ -80,4 +71,12 @@
 .card-membre:hover {
   transition-duration: 1s;
   transform: scale(1.1);
+}
+
+.menu-item {
+  transition: transform 0.3s;
+}
+
+.menu-item:hover {
+  transform: translateX(10px);
 }

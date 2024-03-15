@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import {
     Avatar, Divider, IconButton, Stack, Menu, Toolbar, Grid,
-    Button, FormControl, InputLabel, Select, MenuItem, CircularProgress
+    FormControl, InputLabel, Select, MenuItem, CircularProgress
 } from '@mui/material';
 import communityLogoDark from "../../assets/images/community-dark.svg";
 import { LuBarChart2 } from "react-icons/lu";
@@ -12,7 +12,8 @@ import colors from '../../colors/colors';
 import { useContext, useEffect, useState } from 'react';
 import UserContext from '../../contexts/UserContext';
 import { GiReceiveMoney } from "react-icons/gi";
-import { BiLogOut } from "react-icons/bi";
+import { AiFillEdit } from "react-icons/ai";
+import { TbLogout } from "react-icons/tb";
 import { TbMoneybag } from "react-icons/tb";
 import { GrMoney } from "react-icons/gr";
 import { Bar, Doughnut } from 'react-chartjs-2';
@@ -29,6 +30,7 @@ import Toastr from '../../components/Toastr/Toastr';
 import { toast } from 'react-toastify';
 import LoadingGlobal from '../../components/LoadingGlobal/LoadingGlobal';
 import TabMenu from '../../components/TabMenu/TabMenu';
+import CommonDialog from '../../components/ChangePassDialog/CommonDialog';
 import './Dashboard.scss';
 
 
@@ -40,6 +42,7 @@ Chart.defaults.font.family = "lexend";
 Chart.defaults.plugins.legend.position = "bottom";
 
 const DIALOG_DECONNEXION = "DIALOG_DECONNEXION";
+const DIALOG_PASSWORD = "DIALOG_PASSWORD";
 const TRANSACTIONS = "TRANSACTIONS";
 
 
@@ -51,7 +54,6 @@ const getYearsBetween = () => {
     for (let year = startYear; year <= currentYear; year++) {
         years.push(year);
     }
-
     return years;
 };
 
@@ -63,8 +65,10 @@ export default function Dashboard() {
     const [activeMenu, setActiveMenu] = useState(TRANSACTIONS);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
     const [isFullscreen, setIsFullscreen] = useState(false);
-    const [openDialog, setOpenDialog] = useState(false);
-    const [dialogOptions, setDialogOptions] = useState<any>({});
+    const [openDialogConfirm, setOpenDialogConfirm] = useState(false);
+    const [dialogConfirmOptions, setDialogConfirmOptions] = useState<any>({});
+    const [openDialogCommon, setOpenDialogCommon] = useState(false);
+    const [dialogCommonOptions, setDialogCommonOptions] = useState<any>({});
     const [allQueriesLoaded, setAllQueriesLoaded] = useState(false);
     const [totals, setTotals] = useState<any>({});
     const [stats, setStats] = useState<any>({});
@@ -226,23 +230,39 @@ export default function Dashboard() {
     /**
      * Some functions
     */
-    const handleOpenDialog = (dialog: string) => {
-        setOpenDialog(true);
+    const handleOpenDialogConfirm = (dialog: string) => {
+        setOpenDialogConfirm(true);
         if (dialog === DIALOG_DECONNEXION) {
             const options = {
                 title: 'Déconnexion',
                 message: 'Voulez-vous vraiment vous déconnecter de community ?',
                 confirmText: "Me déconnecter",
                 btnClass: "danger-button",
-                handleCloseDialog: handleCloseDialog,
+                handleCloseDialog: handleCloseDialogConfirm,
                 handleConfirmDialog: logout
             };
-            setDialogOptions(options);
+            setDialogConfirmOptions(options);
         }
     };
 
-    const handleCloseDialog = () => {
-        setOpenDialog(false);
+    const handleCloseDialogConfirm = () => {
+        setOpenDialogConfirm(false);
+    };
+
+    const handleOpenDialogCommon = (dialog: string) => {
+        setOpenDialogCommon(true);
+        if (dialog === DIALOG_PASSWORD) {
+            const options = {
+                dialog: dialog,
+                handleCloseDialog: handleCloseDialogCommon,
+                handleConfirmDialog: changePassword
+            };
+            setDialogCommonOptions(options);
+        }
+    };
+
+    const handleCloseDialogCommon = () => {
+        setOpenDialogCommon(false);
     };
 
     const handleOpenUserMenu = (event: any) => {
@@ -268,6 +288,17 @@ export default function Dashboard() {
     const logout = () => {
         removeToken();
         navigate("/", { replace: true });
+    }
+
+    const changePassword = async (passwordData: { new_password: string, old_password: string, confirm_password?: string }) => {
+        setOpenDialogCommon(false);
+        delete passwordData.confirm_password;
+        await Service.updatePassword({ ...passwordData, id: user.id }).then((res: any) => {
+            toast.success(res["success"]);
+        }).catch((_error: any) => {
+            console.log(_error);
+            toast.error(_error?.response?.data?.error ?? "Impossible de mettre à jour votre mot de passe");
+        });
     }
 
     const getStatus = () => {
@@ -570,11 +601,18 @@ export default function Dashboard() {
                                                 <small className='m-0' style={{ color: `${colors.dark}95`, fontSize: 13.5 }}>
                                                     {user?.is_admin === 1 ? "Administrateur" : "Membre"}
                                                 </small>
-                                                <Divider />
-                                                <Button variant="contained" className='logout-button' sx={{ mt: 2 }} onClick={() => { handleCloseUserMenu(); handleOpenDialog(DIALOG_DECONNEXION) }}
-                                                    startIcon={<BiLogOut size={15} style={{ color: "white" }} />}>
+                                                <Divider sx={{ my: 0.8 }} />
+                                                <Stack className='cursor-pointer menu-item' direction={"row"} color={`${colors.dark}99`} py={1} alignItems={"center"} fontSize={14} gap={0.5}
+                                                    onClick={() => { handleCloseUserMenu(); handleOpenDialogCommon(DIALOG_PASSWORD) }}>
+                                                    <AiFillEdit size={20} />
+                                                    Mot de passe
+                                                </Stack>
+                                                <Divider sx={{ my: 0.8 }} />
+                                                <Stack className='cursor-pointer menu-item' direction={"row"} color={`${colors.red}`} py={1} alignItems={"center"} fontSize={14} gap={0.5}
+                                                    onClick={() => { handleCloseUserMenu(); handleOpenDialogConfirm(DIALOG_DECONNEXION) }}>
+                                                    <TbLogout size={20} />
                                                     Se déconnecter
-                                                </Button>
+                                                </Stack>
                                             </Stack>
                                         </Menu>
                                     </Stack>
@@ -655,12 +693,13 @@ export default function Dashboard() {
                                 </Stack>
                                 <Stack px={8} pt={5}>
                                     <small className='text-center' style={{ color: `${colors.dark}95`, fontSize: 12.5 }}>
-                                        Community 0.0.0-beta <br /> By Landry Manankoraisina
+                                        Community 0.1.0-beta <br /> By Landry Manankoraisina
                                     </small>
                                 </Stack>
                             </Stack>
                         </Drawer>
-                        <ConfirmationDialog open={openDialog} options={dialogOptions} />
+                        <ConfirmationDialog open={openDialogConfirm} options={dialogConfirmOptions} />
+                        <CommonDialog open={openDialogCommon} options={dialogCommonOptions} />
                     </Box>
                 )
             }

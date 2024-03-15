@@ -129,11 +129,18 @@ fieldset {
   font-family: "lexend" !important;
   background-color: #f12533 !important;
   box-shadow: none !important;
-  border-radius: 50px !important;
   padding: 10px 15px 10px 15px !important;
 }
 
+.radius-0 {
+  border-radius: 3px !important;
+}
+
 .Toastify__toast--info {
+  font-family: "lexend";
+}
+
+.Toastify__toast--success {
   font-family: "lexend";
 }
 

@@ -17,8 +17,8 @@ export default function Login() {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
 
-    const [credentials, setCredentials] = useState({ username: '', password: '' });
     const { setUserData } = useContext(UserContext);
+    const [credentials, setCredentials] = useState({ username: '', password: '' });
 
     const { isLoading } = useQuery("login", () => Service.login(credentials), {
         enabled: false,
@@ -51,12 +51,12 @@ export default function Login() {
                     </Stack>
                     <Stack gap={1.5} mt={2}>
                         <FormControl fullWidth>
-                            <TextField label={"Nom d'utilisateur"} variant="outlined" name="username"
+                            <TextField label={"Nom d'utilisateur"} variant="outlined"
                                 value={credentials.username} onChange={(event) => handleCredentials({ key: "username", value: event?.target.value })}
                             />
                         </FormControl>
                         <FormControl fullWidth>
-                            <TextField label={"Mot de passe"} type="password" variant="outlined" name="password"
+                            <TextField label={"Mot de passe"} type="password" variant="outlined"
                                 value={credentials.password} onChange={(event) => handleCredentials({ key: "password", value: event?.target.value })}
                             />
                         </FormControl>

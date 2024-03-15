@@ -4,7 +4,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Stack } from '@mui/material';
-import "./ConfirmDialog.scss"
+import "./ConfirmDialog.scss";
 
 
 export default function ConfirmationDialog({ open, options }: { options: any, open: boolean }) {
@@ -21,10 +21,10 @@ export default function ConfirmationDialog({ open, options }: { options: any, op
             </DialogContent>
             <DialogContent>
                 <Stack width={"100%"} direction={"row"} justifyContent={"end"} gap={1.2}>
-                    <Button onClick={handleCloseDialog} className='secondary-button'>
+                    <Button onClick={handleCloseDialog} className='secondary-button radius-0'>
                         Annuler
                     </Button>
-                    <Button onClick={handleConfirmDialog} variant='contained' className={btnClass}>
+                    <Button onClick={handleConfirmDialog} variant='contained' className={`${btnClass} radius-0`}>
                         {confirmText}
                     </Button>
                 </Stack>
