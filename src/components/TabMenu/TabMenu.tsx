@@ -43,7 +43,7 @@ const columns = [
     ["Date de paiement", "Membre", "Montant en MGA", "Mois concerné", "Mode de paiement"],
     ["Date", "Provenance", "Montant en MGA", "Raison"],
     ["Date", "Montant en MGA", "Raison"],
-    ["Date d'emprunt", "Montant en MGA", "Débiteur", "Raison", "Statut"]
+    ["Date d'emprunt", "Montant en MGA", "Reste à payer en MGA", "Débiteur", "Raison", "Statut"]
 ];
 
 const TabPanel = (props: TabPanelProps) => {
@@ -299,13 +299,14 @@ const TabPanel = (props: TabPanelProps) => {
                                                                 {moment(row.date_creation).format("DD-MM-YYYY")}
                                                             </TableCell>
                                                             <TableCell align="right">{formatNumber(row.montant)}</TableCell>
+                                                            <TableCell align="right">{formatNumber(row.montant_reste)}</TableCell>
                                                             <TableCell align="right">{row.debiteur}</TableCell>
                                                             <TableCell align="right">{row.raison ?? "Aucune"}</TableCell>
                                                             <TableCell align="right">
                                                                 <Stack alignItems={"end"} justifyContent={"end"} >
                                                                     <Stack py={0.3} px={1.5} bgcolor={`${getColorStatus(row.is_paye)}`} borderRadius={50}>
                                                                         <small style={{ color: `white`, fontSize: 12 }}>
-                                                                            {row.is_paye > 0 ? "Remboursée" : "Active"}
+                                                                            {row.is_paye > 0 ? "Remboursée" : "Non remboursée"}
                                                                         </small>
                                                                     </Stack>
                                                                 </Stack>
