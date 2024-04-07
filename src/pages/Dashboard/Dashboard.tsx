@@ -30,7 +30,7 @@ import Toastr from '../../components/Toastr/Toastr';
 import { toast } from 'react-toastify';
 import LoadingGlobal from '../../components/LoadingGlobal/LoadingGlobal';
 import TabMenu from '../../components/TabMenu/TabMenu';
-import CommonDialog from '../../components/ChangePassDialog/CommonDialog';
+import CommonDialog from '../../components/CommonDialog/CommonDialog';
 import './Dashboard.scss';
 
 
@@ -100,7 +100,7 @@ export default function Dashboard() {
 
 
     /**
-     * Stuffs for queries
+     * Initial queries
     */
     const queries = [
         {
@@ -285,21 +285,34 @@ export default function Dashboard() {
         }
     };
 
-    const logout = () => {
-        removeToken();
-        navigate("/", { replace: true });
-    }
+    const logout = async () => {
+        setOpenDialogConfirm(false);
+        await Service.logout().then((res: any) => {
+            toast.success(res["success"]);
+            setTimeout(() => {
+                removeToken();
+                navigate("/", { replace: true });
+            }, 1500);
+        }).catch((_error: any) => {
+            console.log(_error);
+            toast.error(_error?.response?.data?.error ?? "Impossible de vous déconnecter");
+        });
+    };
 
     const changePassword = async (passwordData: { new_password: string, old_password: string, confirm_password?: string }) => {
         setOpenDialogCommon(false);
         delete passwordData.confirm_password;
         await Service.updatePassword({ ...passwordData, id: user.id }).then((res: any) => {
             toast.success(res["success"]);
+            setTimeout(() => {
+                removeToken();
+                navigate("/", { replace: true });
+            }, 1500);
         }).catch((_error: any) => {
             console.log(_error);
             toast.error(_error?.response?.data?.error ?? "Impossible de mettre à jour votre mot de passe");
         });
-    }
+    };
 
     const getStatus = () => {
         if (totals.total_dettes > totals.total_soldes_reel) {
@@ -311,7 +324,7 @@ export default function Dashboard() {
         if (totals.total_dettes < totals.total_soldes_reel) {
             return { status: "En croissance", colors: colors.green }
         }
-    }
+    };
 
     const getMonth = (obj: any) => {
         return obj?.map((ob: any) => MONTHS[ob.mois - 1] || '');
@@ -693,7 +706,7 @@ export default function Dashboard() {
                                 </Stack>
                                 <Stack px={8} pt={5}>
                                     <small className='text-center' style={{ color: `${colors.dark}95`, fontSize: 12.5 }}>
-                                        Community 0.1.0-beta <br /> By Landry Manankoraisina
+                                        Community 0.1.1-beta <br /> By Landry Manankoraisina
                                     </small>
                                 </Stack>
                             </Stack>

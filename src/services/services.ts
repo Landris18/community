@@ -29,6 +29,18 @@ export default class Service {
         return res;
     }
 
+    static async logout(removeAll?: boolean) {
+        let res;
+        await axios.get(`${this.baseUrl}logout${removeAll ? `?remove_all=${removeAll}` : ``}`, {
+            ...this.getBearerToken(),
+        }).then((response) => {
+            res = response.data;
+        }).catch((error) => {
+            throw error;
+        });
+        return res;
+    }
+
     static async getMembres() {
         let res;
         await axios.get(`${this.baseUrl}membres`, {
