@@ -101,9 +101,16 @@ export default class Service {
         return res;
     }
 
-    static async getCotisations(annee: number, mois: string, onlyPaid: boolean) {
+    static async getCotisations(annee?: number, mois?: string, onlyPaid?: boolean, groupByMembre?: boolean) {
         let res;
-        await axios.get(`${this.baseUrl}cotisations?annee=${annee}&mois=${mois}&only_paid=${onlyPaid}`, {
+        let query: string = `?`;
+
+        if (annee) query += `annee=${annee}`;
+        if (mois) query += `&mois=${mois}`;
+        if (onlyPaid) query += `&only_paid=${onlyPaid}`;
+        if (groupByMembre) query += `&group_by_membre=${groupByMembre}`;
+
+        await axios.get(`${this.baseUrl}cotisations${query !== `?` ? query : ``}`, {
             ...this.getBearerToken(),
         }).then((response) => {
             res = response.data;

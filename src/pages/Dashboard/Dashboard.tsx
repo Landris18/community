@@ -63,7 +63,6 @@ export default function Dashboard() {
     const { user } = useContext(UserContext);
 
     const [activeMenu, setActiveMenu] = useState(TRANSACTIONS);
-    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [openDialogConfirm, setOpenDialogConfirm] = useState(false);
     const [dialogConfirmOptions, setDialogConfirmOptions] = useState<any>({});
@@ -83,6 +82,8 @@ export default function Dashboard() {
     const [loadingRefetchCotisations, setLoadingRefetchCotisations] = useState<boolean>(false);
     const [loadingRefetchDepenses, setLoadingRefetchDepenses] = useState<boolean>(false);
     const [hasPaidCurrentMonth, setHasPaidCurrentMonth] = useState<boolean>(false);
+    const [membreId, setMembreId] = useState<null | number>(null);
+    const [, setCotisationsMembres] = useState<any>({});
 
     // Global filters
     const [anneeGlobal, setAnneeGlobal] = useState(new Date().getFullYear());
@@ -97,6 +98,10 @@ export default function Dashboard() {
     // Dépenses filter
     const [forDette, setForDette] = useState(false);
     let forDetteFilter = onlyPaid;
+
+    // Menu anchors
+    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+    const [anchorElUserCotisation, setAnchorElUserCotisation] = useState<null | HTMLElement>(null);
 
 
     /**
@@ -135,7 +140,7 @@ export default function Dashboard() {
             queryKey: 'cotisations',
             retry: false,
             refetch: false,
-            queryFn: () => Service.getCotisations(anneeFilterGlobal, moisFilterGlobal, onlyPaidFilter),
+            queryFn: () => Service.getCotisations(anneeFilterGlobal, moisFilterGlobal, onlyPaidFilter, undefined),
             onSuccess: (data: any) => {
                 setCotisations(data.success.cotisations);
             },
@@ -201,6 +206,20 @@ export default function Dashboard() {
                 }
             }
         },
+        {
+            queryKey: 'cotisations_membres',
+            retry: false,
+            refetch: false,
+            queryFn: () => Service.getCotisations(undefined, undefined, undefined, true),
+            onSuccess: (data: any) => {
+                setCotisationsMembres(data.success.cotisations);
+            },
+            onError: (_error: any) => {
+                if (_error?.response?.data?.error) {
+                    toast.error("Problème de récupération des cotisations des membres");
+                }
+            }
+        }
     ];
     const queryResults = useQueries(queries);
 
@@ -261,16 +280,16 @@ export default function Dashboard() {
         }
     };
 
-    const handleCloseDialogCommon = () => {
-        setOpenDialogCommon(false);
+    const handleCloseDialogCommon = () => { setOpenDialogCommon(false) };
+    const handleOpenProfileMenu = (event: any) => { setAnchorElUser(event.currentTarget) };
+    const handleCloseProfileMenu = () => { setAnchorElUser(null) };
+
+    const handleOpenUserCotisationMenu = (event: any) => {
+        setAnchorElUserCotisation(event.currentTarget);
     };
 
-    const handleOpenUserMenu = (event: any) => {
-        setAnchorElUser(event.currentTarget);
-    };
-
-    const handleCloseUserMenu = () => {
-        setAnchorElUser(null);
+    const handleCloseUserCotisationMenu = () => {
+        setAnchorElUserCotisation(null);
     };
 
     const toggleFullscreen = () => {
@@ -550,12 +569,17 @@ export default function Dashboard() {
                                                     <small style={{ color: `${colors.dark}99` }}>La liste des {membres?.length} membres de la communauté</small>
                                                 </Stack>
                                             </Stack>
-                                            <Grid container spacing={3} alignItems={"center"} mt={3}>
+                                            <Grid container spacing={3} alignItems={"center"} mt={1}>
                                                 {
                                                     membres?.map((mb: any) => (
-                                                        <Grid container item xs={12} sm={6} md={3} key={mb.id}>
-                                                            <Stack bgcolor={"white"} width={"100%"} p={2} borderRadius={5} justifyContent={"center"} alignItems={"center"} gap={0.6} className='card-membre'>
-                                                                <Avatar src={mb?.avatar} sx={{ height: 100, width: 100 }} alt='avatar' />
+                                                        <Grid container item xs={12} sm={12} md={6} lg={3} key={mb.id}>
+                                                            <Stack onMouseEnter={() => setMembreId(mb?.id)} onMouseLeave={() => setMembreId(null)} bgcolor={"white"} width={"100%"} p={2.2} borderRadius={5} justifyContent={"center"} alignItems={"center"} gap={0.6} className='card-membre'>
+                                                                <Stack width={"100%"} justifyContent={"end"} alignItems={"end"}>
+                                                                    <IconButton onClick={handleOpenUserCotisationMenu}>
+                                                                        <CiCircleInfo size={20} color={membreId === mb?.id ? colors.teal : 'white'} />
+                                                                    </IconButton>
+                                                                </Stack>
+                                                                <Avatar src={mb?.avatar} sx={{ height: 100, width: 100, mt: -4.2 }} alt='avatar' />
                                                                 <h5 className='m-0'>{mb?.username}</h5>
                                                                 <small style={{ color: `${colors.dark}99` }}>{mb?.is_admin === 1 ? "Administrateur" : "Membre"}</small>
                                                             </Stack>
@@ -563,6 +587,17 @@ export default function Dashboard() {
                                                     ))
                                                 }
                                             </Grid>
+                                            <Menu
+                                                anchorEl={anchorElUserCotisation}
+                                                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                                                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                                                open={Boolean(anchorElUserCotisation)}
+                                                onClose={() => handleCloseUserCotisationMenu}
+                                            >
+                                                <Stack px={2} py={1}>
+                                                    <p>UserCotisation</p>
+                                                </Stack>
+                                            </Menu>
                                         </Stack>
                                         <Toolbar />
                                     </Box>
@@ -589,25 +624,18 @@ export default function Dashboard() {
                                             )
                                         }
                                         <CustomTooltip title={user?.username}>
-                                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                            <IconButton onClick={handleOpenProfileMenu} sx={{ p: 0 }}>
                                                 <Avatar src={user?.avatar} sizes='md' alt={user?.username} sx={{ border: `4px solid ${hasPaidCurrentMonth ? "white" : colors.red}` }} />
                                             </IconButton>
                                         </CustomTooltip>
                                         <Menu
-                                            sx={{ mt: '45px' }}
-                                            className='user-menu'
-                                            anchorEl={anchorElUser}
-                                            anchorOrigin={{
-                                                vertical: 'top',
-                                                horizontal: 'right',
-                                            }}
                                             keepMounted
-                                            transformOrigin={{
-                                                vertical: 'top',
-                                                horizontal: 'right',
-                                            }}
+                                            sx={{ mt: '45px' }}
+                                            anchorEl={anchorElUser}
+                                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                                             open={Boolean(anchorElUser)}
-                                            onClose={() => handleCloseUserMenu()}
+                                            onClose={() => handleCloseProfileMenu()}
                                         >
                                             <Stack px={2} py={1}>
                                                 <p className='m-0 lexend-bold'>{user?.username}</p>
@@ -616,13 +644,13 @@ export default function Dashboard() {
                                                 </small>
                                                 <Divider sx={{ my: 0.8 }} />
                                                 <Stack className='cursor-pointer menu-item' direction={"row"} color={`${colors.dark}99`} py={1} alignItems={"center"} fontSize={14} gap={0.5}
-                                                    onClick={() => { handleCloseUserMenu(); handleOpenDialogCommon(DIALOG_PASSWORD) }}>
+                                                    onClick={() => { handleCloseProfileMenu(); handleOpenDialogCommon(DIALOG_PASSWORD) }}>
                                                     <AiFillEdit size={20} />
                                                     Mot de passe
                                                 </Stack>
                                                 <Divider sx={{ my: 0.8 }} />
                                                 <Stack className='cursor-pointer menu-item' direction={"row"} color={`${colors.red}`} py={1} alignItems={"center"} fontSize={14} gap={0.5}
-                                                    onClick={() => { handleCloseUserMenu(); handleOpenDialogConfirm(DIALOG_DECONNEXION) }}>
+                                                    onClick={() => { handleCloseProfileMenu(); handleOpenDialogConfirm(DIALOG_DECONNEXION) }}>
                                                     <TbLogout size={20} />
                                                     Se déconnecter
                                                 </Stack>
