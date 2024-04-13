@@ -22,7 +22,7 @@ import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
 import { CiCircleInfo } from "react-icons/ci";
 import CustomTooltip from '../../components/CustomTooltip/CustomTooltip';
 import ConfirmationDialog from '../../components/ConfirmDialog/ConfirmDialog';
-import { MONTHS, formatNumber, removeToken } from '../../utility/utility';
+import { MONTHS, MONTHS_LIST, formatNumber, removeToken } from '../../utility/utility';
 import { useNavigate } from 'react-router-dom';
 import { useQueries } from 'react-query';
 import Service from '../../services/services';
@@ -83,7 +83,8 @@ export default function Dashboard() {
     const [loadingRefetchDepenses, setLoadingRefetchDepenses] = useState<boolean>(false);
     const [hasPaidCurrentMonth, setHasPaidCurrentMonth] = useState<boolean>(false);
     const [membreId, setMembreId] = useState<null | number>(null);
-    const [, setCotisationsMembres] = useState<any>({});
+    const [membre, setMembre] = useState<any>(null);
+    const [cotisationsMembres, setCotisationsMembres] = useState<any[]>([]);
 
     // Global filters
     const [anneeGlobal, setAnneeGlobal] = useState(new Date().getFullYear());
@@ -289,6 +290,7 @@ export default function Dashboard() {
     };
 
     const handleCloseUserCotisationMenu = () => {
+        setMembre(null);
         setAnchorElUserCotisation(null);
     };
 
@@ -342,6 +344,18 @@ export default function Dashboard() {
         }
         if (totals.total_dettes < totals.total_soldes_reel) {
             return { status: "En croissance", colors: colors.green }
+        }
+    };
+
+    const getStatusCotisationUser = (mois: string, annee: number) => {
+        if (membre?.id) {
+            const filterByMembre: any = cotisationsMembres?.filter((ct: any) => ct.membre_id === membre?.id)[0];
+            if ((mois === "Janvier" && annee === 2024) || (membre?.id === 17 && mois === "Février")) return colors.blue;
+            if (filterByMembre["annees"][annee.toString()].includes(mois)) {
+                return colors.green;
+            } else {
+                return colors.red;
+            }
         }
     };
 
@@ -575,8 +589,8 @@ export default function Dashboard() {
                                                         <Grid container item xs={12} sm={12} md={6} lg={3} key={mb.id}>
                                                             <Stack onMouseEnter={() => setMembreId(mb?.id)} onMouseLeave={() => setMembreId(null)} bgcolor={"white"} width={"100%"} p={2.2} borderRadius={5} justifyContent={"center"} alignItems={"center"} gap={0.6} className='card-membre'>
                                                                 <Stack width={"100%"} justifyContent={"end"} alignItems={"end"}>
-                                                                    <IconButton onClick={handleOpenUserCotisationMenu}>
-                                                                        <CiCircleInfo size={20} color={membreId === mb?.id ? colors.teal : 'white'} />
+                                                                    <IconButton onClick={(event) => { handleOpenUserCotisationMenu(event); setMembre(mb) }}>
+                                                                        <CiCircleInfo size={20} color={(membreId === mb?.id || membre?.id === mb?.id) ? colors.teal : "white"} />
                                                                     </IconButton>
                                                                 </Stack>
                                                                 <Avatar src={mb?.avatar} sx={{ height: 100, width: 100, mt: -4.2 }} alt='avatar' />
@@ -592,10 +606,27 @@ export default function Dashboard() {
                                                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                                                 transformOrigin={{ vertical: 'top', horizontal: 'left' }}
                                                 open={Boolean(anchorElUserCotisation)}
-                                                onClose={() => handleCloseUserCotisationMenu}
+                                                onClose={handleCloseUserCotisationMenu}
                                             >
                                                 <Stack px={2} py={1}>
-                                                    <p>UserCotisation</p>
+                                                    <h4 className='lexend-bold m-0' style={{ color: colors.teal }}>
+                                                        Cotisations de {membre?.username}
+                                                    </h4>
+                                                    <Divider sx={{ my: 1 }} />
+                                                    <Stack width={350}>
+                                                        <small style={{ color: `${colors.dark}99` }}>Cotisation année 2024</small>
+                                                        <Stack direction={"row"} flexWrap={"wrap"} mt={1.4} alignItems={"center"} gap={0.8} justifyContent={"start"}>
+                                                            {
+                                                                MONTHS_LIST?.map((mo: any, index: number) => (
+                                                                    <Stack key={index} py={0.4} px={1} bgcolor={`${getStatusCotisationUser(mo?.long, 2024)}`} borderRadius={50}>
+                                                                        <small style={{ color: `white`, letterSpacing: 0.5, fontSize: 12.5 }}>
+                                                                            {mo?.short}
+                                                                        </small>
+                                                                    </Stack>
+                                                                ))
+                                                            }
+                                                        </Stack>
+                                                    </Stack>
                                                 </Stack>
                                             </Menu>
                                         </Stack>
@@ -734,7 +765,7 @@ export default function Dashboard() {
                                 </Stack>
                                 <Stack px={8} pt={5}>
                                     <small className='text-center' style={{ color: `${colors.dark}95`, fontSize: 12.5 }}>
-                                        Community 0.1.1-beta <br /> By Landry Manankoraisina
+                                        Community 0.1.2-beta <br /> By Landry Manankoraisina
                                     </small>
                                 </Stack>
                             </Stack>

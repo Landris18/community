@@ -1,3 +1,5 @@
+const FR_LOCALE = 'fr-FR';
+
 export const storeToken = (accessToken: string, userId: number) => {
     const expiresAt = new Date(new Date().getTime() + 48 * 60 * 60 * 1000);
     const tokenData = {
@@ -26,6 +28,20 @@ export const isTokenExpired = () => {
 export const MONTHS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
     'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
 ];
+
+const capitalizeFirstLetter = (string: string): string => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+export const MONTHS_LIST = Array.from({ length: 12 }, (_, index) => {
+    const formatterShort = new Intl.DateTimeFormat(FR_LOCALE, { month: 'short' });
+    const formatterLong = new Intl.DateTimeFormat(FR_LOCALE, { month: 'long' });
+    const date = new Date(2000, index, 1);
+    return {
+        short: capitalizeFirstLetter(formatterShort.format(date)),
+        long: capitalizeFirstLetter(formatterLong.format(date))
+    };
+});
 
 export const formatNumber = (number: number) => {
     return number?.toLocaleString().replace(/,/g, ' ');

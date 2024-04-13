@@ -138,10 +138,12 @@ fieldset {
 
 .Toastify__toast--info {
   font-family: "lexend";
+  background: #097e91 !important;
 }
 
 .Toastify__toast--success {
   font-family: "lexend";
+  background: #08ae70 !important;
 }
 
 .Toastify__toast--warning {
@@ -151,4 +153,5 @@ fieldset {
 
 .Toastify__toast--error {
   font-family: "lexend";
+  background: #f12533 !important;
 }
