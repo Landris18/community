@@ -1,16 +1,18 @@
-import { useContext, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useQuery, useQueryClient } from 'react-query'
-import { Box, Button, CircularProgress, Container, FormControl, Stack, TextField } from '@mui/material'
+import * as React from 'react';
+import { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQuery, useQueryClient } from 'react-query';
+import { Box, Button, CircularProgress, Container, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Stack, TextField } from '@mui/material';
 import communityLogoDark from "../../assets/images/community-dark.svg";
-import LoginIcon from "@mui/icons-material/Login"
-import colors from "../../colors/colors"
-import Service from '../../services/services'
-import { toast } from 'react-toastify'
-import Toastr from '../../components/Toastr/Toastr'
-import UserContext from '../../contexts/UserContext'
-import { storeToken } from '../../utility/utility'
-import './Login.scss'
+import LoginIcon from "@mui/icons-material/Login";
+import colors from "../../colors/colors";
+import Service from '../../services/services';
+import { toast } from 'react-toastify';
+import Toastr from '../../components/Toastr/Toastr';
+import UserContext from '../../contexts/UserContext';
+import { storeToken } from '../../utility/utility';
+import { VscEye, VscEyeClosed } from "react-icons/vsc";
+import './Login.scss';
 
 
 export default function Login() {
@@ -19,6 +21,8 @@ export default function Login() {
 
     const { setUserData } = useContext(UserContext);
     const [credentials, setCredentials] = useState({ username: '', password: '' });
+    const [showPassword, setShowPassword] = React.useState(false);
+
 
     const { isLoading } = useQuery("login", () => Service.login(credentials), {
         enabled: false,
@@ -41,6 +45,13 @@ export default function Login() {
         setCredentials({ ...credentials, [credential.key]: credential.value });
     };
 
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+    };
+
+
     return (
         <Container maxWidth={false} className={"login-container"}>
             <Stack justifyContent={"center"} alignItems={"center"} width={"100%"} height={"100%"}>
@@ -56,8 +67,22 @@ export default function Login() {
                             />
                         </FormControl>
                         <FormControl fullWidth>
-                            <TextField label={"Mot de passe"} type="password" variant="outlined"
+                            <InputLabel htmlFor="outlined-adornment-password">Mot de passe</InputLabel>
+                            <OutlinedInput
+                                type={showPassword ? 'text' : 'password'}
                                 value={credentials.password} onChange={(event) => handleCredentials({ key: "password", value: event?.target.value })}
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            onClick={handleClickShowPassword}
+                                            onMouseDown={handleMouseDownPassword}
+                                            edge="end"
+                                        >
+                                            {showPassword ? <VscEyeClosed size={20} /> : <VscEye size={20} />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                }
+                                label="Mot de passe"
                             />
                         </FormControl>
                         <Button variant="contained" className='primary-button' sx={{ mt: 0.8 }}
