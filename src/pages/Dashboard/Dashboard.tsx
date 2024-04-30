@@ -433,14 +433,14 @@ export default function Dashboard() {
                 backgroundColor: colors.blue,
             },
             {
-                label: 'Dette',
-                data: extractTotalMontant(stats.dettes),
-                backgroundColor: colors.yellow,
-            },
-            {
                 label: 'Dépense',
                 data: extractTotalMontant(stats.depenses),
                 backgroundColor: colors.red,
+            },
+            {
+                label: 'Dette cumulée',
+                data: extractTotalMontant(stats.dettes),
+                backgroundColor: colors.yellow,
             }
         ],
     };
@@ -497,7 +497,7 @@ export default function Dashboard() {
                         {(() => {
                             if (activeMenu === TRANSACTIONS) {
                                 return (
-                                    <Box id='main' component="main" sx={{ flexGrow: 1, bgcolor: '#fbfbfb', px: 6, pt: 4, overflowY: "scroll" }} height={"100vh"}>
+                                    <Box id='main' component="main" sx={{ flexGrow: 1, bgcolor: '#fbfbfb', px: 6, pt: 2.5, overflowY: "scroll" }} height={"100vh"}>
                                         <Stack width={"100%"}>
                                             <Stack direction={"row"} justifyContent={"space-between"} alignItems={"end"}>
                                                 <Stack>
@@ -527,7 +527,7 @@ export default function Dashboard() {
                                                             <CircularProgress size={60} sx={{ color: `${colors.teal}` }} value={70} variant="indeterminate" />
                                                         </Stack>
                                                     ) : !loadingRefetch && stats?.revenus_total?.length > 0 ? (
-                                                        <Bar id='stats-chart' options={options} data={statsChartData} />
+                                                        <Bar options={options} data={statsChartData} />
                                                     ) : (
                                                         <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} pb={5} gap={0.6}>
                                                             <CiCircleInfo size={60} color={`${colors.teal}`} />
@@ -636,7 +636,7 @@ export default function Dashboard() {
                             }
                         })()}
                         <Drawer id='right-sidebar' sx={{ width: drawerWidthRight, flexShrink: 0, '& .MuiDrawer-paper': { width: drawerWidthRight, boxSizing: 'border-box' } }} variant="permanent" anchor="right">
-                            <Stack width={"100%"} height={"100%"} justifyContent={"space-between"} mt={4} pb={3}>
+                            <Stack width={"100%"} height={"100%"} justifyContent={"space-between"} mt={3.5} pb={3}>
                                 <Stack px={6}>
                                     <Stack width={"100%"} direction={"row"} justifyContent={"end"} alignItems={"center"} gap={0.7}>
                                         {
@@ -742,7 +742,7 @@ export default function Dashboard() {
                                         </Stack>
                                         <Stack gap={1.5}>
                                             <h4 className='m-0'>Répartition</h4>
-                                            <Doughnut id='totals-chart' data={totalsChartData} options={{
+                                            <Doughnut data={totalsChartData} options={{
                                                 plugins: {
                                                     tooltip: {
                                                         callbacks: {
