@@ -20,6 +20,14 @@
     url(../fonts/Lexend/Lexend-Light.ttf) format("woff");
 }
 
+$yellow: #edbb28;
+$dark: #241f31;
+$red: #f12533;
+$teal: #527679;
+$green: #08ae70;
+$blue: #097e91;
+$orange: #ff560b;
+
 body {
   font-family: "lexend", system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -58,7 +66,7 @@ h6,
 p,
 span,
 small {
-  color: #241f31;
+  color: $dark;
 }
 
 .m-0 {
@@ -91,17 +99,17 @@ small {
 }
 
 fieldset {
-  border-color: #edbb28 !important;
+  border-color: $yellow !important;
 }
 
 .MuiOutlinedInput-root {
   font-family: "lexend" !important;
-  color: #241f31 !important;
+  color: $dark !important;
   font-size: 15.5px !important;
 }
 
 .Mui-focused fieldset.MuiOutlinedInput-notchedOutline {
-  border-color: #edbb28;
+  border-color: $yellow;
 }
 
 .MuiPickersDay-root,
@@ -118,17 +126,17 @@ fieldset {
 }
 
 .MuiPickersDay-root.Mui-selected {
-  background-color: #edbb28 !important;
+  background-color: $yellow !important;
 }
 
 .MuiPickersYear-yearButton.Mui-selected {
-  background-color: #edbb28 !important;
+  background-color: $yellow !important;
 }
 
 .primary-button {
   text-transform: none !important;
   font-family: "lexend" !important;
-  background-color: #edbb28 !important;
+  background-color: $yellow !important;
   box-shadow: none !important;
   border-radius: 50px !important;
   padding: 10px !important;
@@ -152,7 +160,7 @@ fieldset {
 .danger-button {
   text-transform: none !important;
   font-family: "lexend" !important;
-  background-color: #f12533 !important;
+  background-color: $red !important;
   box-shadow: none !important;
   padding: 10px 15px 10px 15px !important;
 }
@@ -163,7 +171,7 @@ fieldset {
   box-shadow: none !important;
   border-radius: 50px !important;
   padding: 6px 15px 6px 15px !important;
-  background-color: #527679 !important;
+  background-color: $teal !important;
   font-size: 13px !important;
 }
 
@@ -173,20 +181,20 @@ fieldset {
 
 .Toastify__toast--info {
   font-family: "lexend";
-  background: #097e91 !important;
+  background: $blue !important;
 }
 
 .Toastify__toast--success {
   font-family: "lexend";
-  background: #08ae70 !important;
+  background: $green !important;
 }
 
 .Toastify__toast--warning {
   font-family: "lexend";
-  background: #f57c00 !important;
+  background: $yellow !important;
 }
 
 .Toastify__toast--error {
   font-family: "lexend";
-  background: #f12533 !important;
+  background: $red !important;
 }

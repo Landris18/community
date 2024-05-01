@@ -1,3 +1,5 @@
+@import '../../assets/styles/index.scss';
+
 .tab-label {
   font-family: "lexend" !important;
   text-transform: capitalize !important;
@@ -6,7 +8,7 @@
 
 .MuiTableCell-head {
   font-family: "lexend" !important;
-  color: #527679 !important;
+  color: $teal !important;
 }
 
 .MuiTableCell-body {
