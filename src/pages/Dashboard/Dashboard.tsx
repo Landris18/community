@@ -10,7 +10,7 @@ import { LuBarChart2 } from "react-icons/lu";
 import { HiOutlineUsers } from "react-icons/hi2";
 import colors from '../../colors/colors';
 import { useContext, useEffect, useState } from 'react';
-import UserContext from '../../contexts/UserContext';
+import UserContext from '../../contexts/user/UserContext';
 import { GiReceiveMoney } from "react-icons/gi";
 import { AiFillEdit } from "react-icons/ai";
 import { TbLogout } from "react-icons/tb";
@@ -22,7 +22,7 @@ import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
 import { CiCircleInfo } from "react-icons/ci";
 import CustomTooltip from '../../components/CustomTooltip/CustomTooltip';
 import ConfirmationDialog from '../../components/ConfirmDialog/ConfirmDialog';
-import { MONTHS, MONTHS_LIST, formatNumber, removeToken } from '../../utility/utility';
+import { MONTHS, MONTHS_LIST, formatNumber, getYearsBetween, removeToken } from '../../utility/utility';
 import { useNavigate } from 'react-router-dom';
 import { useQueries } from 'react-query';
 import Service from '../../services/services';
@@ -31,6 +31,7 @@ import { toast } from 'react-toastify';
 import LoadingGlobal from '../../components/LoadingGlobal/LoadingGlobal';
 import TabMenu from '../../components/TabMenu/TabMenu';
 import CommonDialog from '../../components/CommonDialog/CommonDialog';
+import MembresContext from '../../contexts/membres/MembresContext';
 import './Dashboard.scss';
 
 
@@ -46,21 +47,10 @@ const DIALOG_PASSWORD = "DIALOG_PASSWORD";
 const TRANSACTIONS = "TRANSACTIONS";
 
 
-const getYearsBetween = () => {
-    const currentYear = new Date().getFullYear();
-    const startYear = 2023;
-    const years = [];
-
-    for (let year = startYear; year <= currentYear; year++) {
-        years.push(year);
-    }
-    return years;
-};
-
-
 export default function Dashboard() {
     const navigate = useNavigate();
     const { user } = useContext(UserContext);
+    const { setMembresData } = useContext(MembresContext);
 
     const [activeMenu, setActiveMenu] = useState(TRANSACTIONS);
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -119,7 +109,7 @@ export default function Dashboard() {
             },
             onError: (_error: any) => {
                 if (_error?.response?.data?.error) {
-                    toast.error("Problème de récupération des analyses");
+                    toast.error("Problème de récupération des totaux");
                 }
             }
         },
@@ -199,6 +189,7 @@ export default function Dashboard() {
             refetch: false,
             queryFn: () => Service.getMembres(),
             onSuccess: (data: any) => {
+                setMembresData(data.success);
                 setMembres(data.success);
             },
             onError: (_error: any) => {

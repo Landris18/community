@@ -46,3 +46,14 @@ export const MONTHS_LIST = Array.from({ length: 12 }, (_, index) => {
 export const formatNumber = (number: number) => {
     return number?.toLocaleString().replace(/,/g, ' ');
 };
+
+export const getYearsBetween = () => {
+    const currentYear = new Date().getFullYear();
+    const startYear = 2023;
+    const years = [];
+
+    for (let year = startYear; year <= currentYear; year++) {
+        years.push(year);
+    }
+    return years;
+};

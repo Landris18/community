@@ -9,7 +9,7 @@ import colors from "../../colors/colors";
 import Service from '../../services/services';
 import { toast } from 'react-toastify';
 import Toastr from '../../components/Toastr/Toastr';
-import UserContext from '../../contexts/UserContext';
+import UserContext from '../../contexts/user/UserContext';
 import { storeToken } from '../../utility/utility';
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import './Login.scss';

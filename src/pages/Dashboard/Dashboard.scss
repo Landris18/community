@@ -8,12 +8,12 @@
 }
 
 // For the menu items in select input
-.Mui-selected:hover {
+.MuiMenuItem-root.Mui-selected:hover {
   background-color: #1976d20b !important;
 }
 
-.Mui-selected {
-  background-color: #1976d208 !important;
+.MuiMenuItem-root.Mui-selected {
+  background-color: #1976d21d !important;
 }
 
 .MuiMenuItem-root {

@@ -1,13 +1,18 @@
-import moment from "moment";
 import * as React from 'react';
+import moment from "moment";
 import {
     Stack, styled, Box, Tab, Tabs, TableContainer,
     Table, TableHead, TableRow, TableCell, TableBody,
-    FormControlLabel, Switch, alpha, CircularProgress
+    FormControlLabel, Switch, alpha, CircularProgress, Button
 } from '@mui/material';
 import colors from '../../colors/colors';
 import { CiCircleInfo } from "react-icons/ci";
 import { formatNumber } from "../../utility/utility";
+import { AiOutlinePlus } from "react-icons/ai";
+import UserContext from '../../contexts/user/UserContext';
+import CommonDialog from '../CommonDialog/CommonDialog';
+import Service from '../../services/services';
+import { toast } from 'react-toastify';
 import "./TabMenu.scss";
 
 
@@ -46,9 +51,49 @@ const columns = [
     ["Date d'emprunt", "Montant en MGA", "Reste à payer en MGA", "Débiteur", "Raison", "Statut"]
 ];
 
+const DIALOG_ADD_COTISATION = "DIALOG_ADD_COTISATION";
+
+
 const TabPanel = (props: TabPanelProps) => {
+    const { user } = React.useContext(UserContext);
+
     const { value, index, data, valueSwitch, changeSwitch, isLoading } = props;
     const cols = columns[index];
+
+    const [openDialogCommon, setOpenDialogCommon] = React.useState(false);
+    const [dialogCommonOptions, setDialogCommonOptions] = React.useState<any>({});
+
+
+    const handleOpenDialogCommon = (dialog: string) => {
+        setOpenDialogCommon(true);
+        if (dialog === DIALOG_ADD_COTISATION) {
+            const options = {
+                dialog: dialog,
+                handleCloseDialog: handleCloseDialogCommon,
+                handleConfirmDialog: addCotisations
+            };
+            setDialogCommonOptions(options);
+        }
+    };
+
+    const handleCloseDialogCommon = () => { setOpenDialogCommon(false) };
+
+    const addCotisations = async (cotisationsData: {
+        membre_id: number, mode_paiement: string, montant: number, mois: string[], date_paiement: string, annee: number
+    }) => {
+        const moisAnnee = cotisationsData["mois"].map((mois: string) => mois + " " + cotisationsData["annee"]);
+        const updatedCotisationsData = {
+            membre_id: cotisationsData["membre_id"], mode_paiement: cotisationsData["mode_paiement"],
+            montant: cotisationsData["montant"], date_paiement: cotisationsData["date_paiement"], lst_mois_annee: moisAnnee
+        };
+        await Service.addCotisations(updatedCotisationsData).then((res: any) => {
+            toast.success(`Cotisations enregistrées ${res["success"]["saved"]}, ignorées ${res["success"]["ignored"]}`);
+            setOpenDialogCommon(false);
+        }).catch((_error: any) => {
+            toast.error(_error?.response?.data?.error ?? "Impossible d'ajouter ces cotisations");
+            setOpenDialogCommon(false);
+        });
+    };
 
     const getColorPaiement = (mode: string) => {
         if (mode === "Non payée") return colors.red;
@@ -74,7 +119,16 @@ const TabPanel = (props: TabPanelProps) => {
                 if (index === 0) {
                     return (
                         <Stack mt={1.5}>
-                            <Stack width={"100%"} alignItems={"end"}>
+                            <Stack width={"100%"} justifyContent={user?.is_admin === 1 ? "space-between" : "end"} direction={"row"}>
+                                {
+                                    user?.is_admin === 1 && (
+                                        <Button variant='contained' className={`add-button`} startIcon={<AiOutlinePlus color={"white"} size={17} />}
+                                            onClick={() => { handleOpenDialogCommon(DIALOG_ADD_COTISATION) }}
+                                        >
+                                            Cotisation
+                                        </Button>
+                                    )
+                                }
                                 <FormControlLabel control={<CustomSwitch size="small" checked={valueSwitch} onChange={changeSwitch as any} />} label={"Payées"} />
                             </Stack>
                             <Stack bgcolor={"#1976d204"}>
@@ -323,6 +377,7 @@ const TabPanel = (props: TabPanelProps) => {
                     );
                 }
             })()}
+            <CommonDialog open={openDialogCommon} options={dialogCommonOptions} />
         </div>
     );
 };

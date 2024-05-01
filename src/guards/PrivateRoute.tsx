@@ -1,5 +1,5 @@
 import { ReactNode, useContext, useEffect, useState } from 'react';
-import UserContext from '../contexts/UserContext';
+import UserContext from '../contexts/user/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from 'react-query';
 import Service from '../services/services';

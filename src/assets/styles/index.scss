@@ -76,6 +76,10 @@ small {
   cursor: pointer !important;
 }
 
+.MuiList-root {
+  max-height: 350px !important;
+}
+
 .MuiFormLabel-root {
   font-family: "lexend" !important;
   color: #241f31ae !important;
@@ -98,6 +102,27 @@ fieldset {
 
 .Mui-focused fieldset.MuiOutlinedInput-notchedOutline {
   border-color: #edbb28;
+}
+
+.MuiPickersDay-root,
+.MuiPickersYear-yearButton,
+.MuiDayCalendar-weekDayLabel {
+  font-family: "lexend" !important;
+  font-size: 14px !important;
+}
+
+.MuiPickersCalendarHeader-label {
+  font-family: "lexend" !important;
+  text-transform: capitalize !important;
+  font-size: 14px !important;
+}
+
+.MuiPickersDay-root.Mui-selected {
+  background-color: #edbb28 !important;
+}
+
+.MuiPickersYear-yearButton.Mui-selected {
+  background-color: #edbb28 !important;
 }
 
 .primary-button {
@@ -130,6 +155,16 @@ fieldset {
   background-color: #f12533 !important;
   box-shadow: none !important;
   padding: 10px 15px 10px 15px !important;
+}
+
+.add-button {
+  text-transform: none !important;
+  font-family: "lexend" !important;
+  box-shadow: none !important;
+  border-radius: 50px !important;
+  padding: 6px 15px 6px 15px !important;
+  background-color: #527679 !important;
+  font-size: 13px !important;
 }
 
 .radius-0 {

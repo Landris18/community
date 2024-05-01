@@ -120,6 +120,22 @@ export default class Service {
         return res;
     }
 
+    static async addCotisations(
+        cotisationsData: {
+            membre_id: number, mode_paiement: string, montant: number, date_paiement: string, lst_mois_annee: string[]
+        }
+    ) {
+        let res;
+        await axios.post(`${this.baseUrl}add_cotisations`, cotisationsData, {
+            ...this.getBearerToken(),
+        }).then((response) => {
+            res = response.data;
+        }).catch((error) => {
+            throw error;
+        });
+        return res;
+    }
+
     static async getRevenus(annee: number, mois: string) {
         let res;
         await axios.get(`${this.baseUrl}revenus?annee=${annee}&mois=${mois}`, {
