@@ -3,8 +3,8 @@ import { getToken } from "../utility/utility";
 
 
 export default class Service {
-    static baseUrl: string = "http://localhost:3000/api/";
-    // static baseUrl: string = "https://cashbase.onrender.com/api/";
+    // static baseUrl: string = "http://localhost:3000/api/";
+    static baseUrl: string = "https://cashbase.onrender.com/api/";
 
     private static getBearerToken(): AxiosRequestConfig | {} {
         const accessToken = getToken();

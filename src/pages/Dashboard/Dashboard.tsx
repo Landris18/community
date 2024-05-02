@@ -12,7 +12,7 @@ import colors from '../../colors/colors';
 import { useContext, useEffect, useState } from 'react';
 import UserContext from '../../contexts/user/UserContext';
 import { GiReceiveMoney } from "react-icons/gi";
-import { AiFillEdit } from "react-icons/ai";
+import { HiOutlineLockClosed } from "react-icons/hi2";
 import { TbLogout } from "react-icons/tb";
 import { TbMoneybag } from "react-icons/tb";
 import { GrMoney } from "react-icons/gr";
@@ -667,7 +667,7 @@ export default function Dashboard() {
                                                 <Divider sx={{ my: 0.8 }} />
                                                 <Stack className='cursor-pointer menu-item' direction={"row"} color={`${colors.dark}99`} py={1} alignItems={"center"} fontSize={14} gap={0.5}
                                                     onClick={() => { handleCloseProfileMenu(); handleOpenDialogCommon(DIALOG_PASSWORD) }}>
-                                                    <AiFillEdit size={20} />
+                                                    <HiOutlineLockClosed size={20} />
                                                     Mot de passe
                                                 </Stack>
                                                 <Divider sx={{ my: 0.8 }} />
