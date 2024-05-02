@@ -2,7 +2,7 @@ FROM node:21-alpine as app
 WORKDIR /app
 COPY package.json ./
 COPY package-lock.json ./
-RUN npm install -g npm && npm ci --silent
+RUN npm install -g npm && npm install
 COPY . ./
 RUN npm run build
 
