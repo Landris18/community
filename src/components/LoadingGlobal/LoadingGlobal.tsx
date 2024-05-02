@@ -9,8 +9,8 @@ export default function LoadingGlobal() {
             <Stack justifyContent={"center"} alignItems={"center"} width={"100%"} height={"100%"}>
                 <Stack p={4} borderRadius={5} my={3} alignItems={"center"}>
                     <Box component={"img"} src={communityLogoDark} width={100} />
-                    <Stack direction={"row"}>
-                        <p className='m-0'>Community est cours de chargement</p>
+                    <Stack direction={"row"} textAlign={"center"} mt={0.5}>
+                        <p className='m-0'>Récupération des données</p>
                     </Stack>
                     <Stack mt={2}>
                         <BarLoader color={colors.yellow} />

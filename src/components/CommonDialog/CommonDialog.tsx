@@ -1,6 +1,5 @@
 import "dayjs/locale/fr";
 import dayjs from "dayjs";
-import moment from "moment";
 import { useContext, useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -135,7 +134,7 @@ export default function CommonDialog({ open, options }: { open: boolean, options
                                     <Stack direction={"row"} gap={1.5} alignItems={"center"}>
                                         <FormControl sx={{ width: 300 }}>
                                             <TextField label={"Montant"} variant="outlined" type='number'
-                                                value={dataCotisations["montant"]} onChange={(event) => handleCotisations({ key: "montant", value: event?.target.value })}
+                                                value={dataCotisations["montant"]} onChange={(event) => handleCotisations({ key: "montant", value: parseInt(event?.target.value) })}
                                             />
                                         </FormControl>
                                         <FormControl sx={{ width: 300 }}>
@@ -191,7 +190,7 @@ export default function CommonDialog({ open, options }: { open: boolean, options
                                                 value={dayjs(dataCotisations["date_paiement"])}
                                                 minDate={dayjs('2024-02-01')}
                                                 maxDate={dayjs(new Date())}
-                                                onChange={(value: any) => handleCotisations({ key: "date_paiement", value: moment(value.toString()).format("YYYY-MM-DD") })}
+                                                onChange={(value: any) => handleCotisations({ key: "date_paiement", value: dayjs(value).format("YYYY-MM-DD") })}
                                             />
                                         </FormControl>
                                     </LocalizationProvider>
