@@ -605,11 +605,11 @@ export default function Dashboard() {
                                                     </h4>
                                                     <Divider sx={{ my: 1 }} />
                                                     <Stack width={350}>
-                                                        <small style={{ color: `${colors.dark}99` }}>Cotisation année 2024</small>
+                                                        <small style={{ color: `${colors.dark}99` }}>Cotisation de l'année {new Date().getFullYear()}</small>
                                                         <Stack direction={"row"} flexWrap={"wrap"} mt={1.4} alignItems={"center"} gap={0.8} justifyContent={"start"}>
                                                             {
                                                                 MONTHS_LIST?.map((mo: any, index: number) => (
-                                                                    <Stack key={index} py={0.4} px={1} bgcolor={`${getStatusCotisationUser(mo?.long, 2024)}`} borderRadius={50}>
+                                                                    <Stack key={index} py={0.4} px={1} bgcolor={`${getStatusCotisationUser(mo?.long, new Date().getFullYear())}`} borderRadius={50}>
                                                                         <small style={{ color: `white`, letterSpacing: 0.5, fontSize: 12.5 }}>
                                                                             {mo?.short}
                                                                         </small>
@@ -665,13 +665,13 @@ export default function Dashboard() {
                                                     {user?.is_admin === 1 ? "Administrateur" : "Membre"}
                                                 </small>
                                                 <Divider sx={{ my: 0.8 }} />
-                                                <Stack className='cursor-pointer menu-item' direction={"row"} color={`${colors.dark}99`} py={1} alignItems={"center"} fontSize={14} gap={0.5}
+                                                <Stack className='cursor-pointer menu-item' direction={"row"} color={`${colors.dark}99`} py={1} alignItems={"start"} fontSize={14} gap={0.5}
                                                     onClick={() => { handleCloseProfileMenu(); handleOpenDialogCommon(DIALOG_PASSWORD) }}>
                                                     <HiOutlineLockClosed size={20} />
                                                     Mot de passe
                                                 </Stack>
                                                 <Divider sx={{ my: 0.8 }} />
-                                                <Stack className='cursor-pointer menu-item' direction={"row"} color={`${colors.red}`} py={1} alignItems={"center"} fontSize={14} gap={0.5}
+                                                <Stack className='cursor-pointer menu-item' direction={"row"} color={`${colors.red}`} py={1} alignItems={"start"} fontSize={14} gap={0.5}
                                                     onClick={() => { handleCloseProfileMenu(); handleOpenDialogConfirm(DIALOG_DECONNEXION) }}>
                                                     <TbLogout size={20} />
                                                     Se déconnecter
