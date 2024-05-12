@@ -36,8 +36,8 @@ import { TbDatabaseExport } from "react-icons/tb";
 import './Dashboard.scss';
 
 
-const drawerWidth = 100;
-const drawerWidthRight = 400;
+const drawerWidth = 85;
+const drawerWidthRight = 365;
 
 Chart.register(ArcElement, Tooltip, Legend);
 Chart.defaults.font.family = "lexend";
@@ -512,12 +512,12 @@ export default function Dashboard() {
                         {(() => {
                             if (activeMenu === TRANSACTIONS) {
                                 return (
-                                    <Box id='main' component="main" sx={{ flexGrow: 1, bgcolor: '#fbfbfb', px: 6, pt: 2.5, overflowY: "scroll" }} height={"100vh"}>
+                                    <Box id='main' component="main" sx={{ flexGrow: 1, bgcolor: '#fbfbfb', px: 5, pt: 2.5, overflowY: "scroll" }} height={"100vh"}>
                                         <Stack width={"100%"}>
                                             <Stack direction={"row"} justifyContent={"space-between"} alignItems={"end"}>
                                                 <Stack>
                                                     <h1 className='m-0 lexend-bold'>Transactions</h1>
-                                                    <small style={{ color: `${colors.dark}99` }}>Vous pouvez voir ici nos transactions</small>
+                                                    <small style={{ color: `${colors.dark}99` }}>Statistiques et suivi des transactions de l'année {anneeGlobal}</small>
                                                 </Stack>
                                                 <FormControl size="small">
                                                     <InputLabel>Année</InputLabel>
@@ -652,25 +652,21 @@ export default function Dashboard() {
                         })()}
                         <Drawer id='right-sidebar' sx={{ width: drawerWidthRight, flexShrink: 0, '& .MuiDrawer-paper': { width: drawerWidthRight, boxSizing: 'border-box' } }} variant="permanent" anchor="right">
                             <Stack width={"100%"} height={"100%"} justifyContent={"space-between"} mt={3.5} pb={3}>
-                                <Stack px={6}>
-                                    <Stack width={"100%"} direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
-                                        <CustomTooltip title={user?.username}>
-                                            <IconButton onClick={handleOpenProfileMenu} sx={{ p: 0 }}>
-                                                <Avatar src={user?.avatar} sizes='md' alt={user?.username} sx={{ border: `4px solid ${hasPaidCurrentMonth ? "white" : colors.red}` }} />
-                                            </IconButton>
-                                        </CustomTooltip>
-                                        <Stack width={"100%"} direction={"row"} justifyContent={"end"} alignItems={"center"}>
+                                <Stack px={5}>
+                                    <Stack direction={"row"} bgcolor={`${colors.teal}09`} py={1} px={1.5} borderRadius={3} justifyContent={"space-between"} alignItems={"center"}>
+                                        <Avatar className='cursor-pointer' onClick={handleOpenProfileMenu} src={user?.avatar} sizes='md' alt={user?.username} sx={{ border: `4px solid ${hasPaidCurrentMonth ? "white" : colors.red}` }} />
+                                        <Stack width={"100%"} direction={"row"} justifyContent={"end"} alignItems={"center"} gap={1}>
                                             {
                                                 isFullscreen ? (
                                                     <CustomTooltip title={"Mode normale"}>
-                                                        <IconButton onClick={() => toggleFullscreen()}>
-                                                            <MdFullscreenExit size={28} className='cursor-pointer' />
+                                                        <IconButton onClick={() => toggleFullscreen()} sx={{ p: 0 }}>
+                                                            <MdFullscreenExit size={26} className='cursor-pointer' />
                                                         </IconButton>
                                                     </CustomTooltip>
                                                 ) : (
                                                     <CustomTooltip title={"Mode plein écran"}>
-                                                        <IconButton onClick={() => toggleFullscreen()}>
-                                                            <MdFullscreen size={28} className='cursor-pointer' />
+                                                        <IconButton onClick={() => toggleFullscreen()} sx={{ p: 0 }}>
+                                                            <MdFullscreen size={26} className='cursor-pointer' />
                                                         </IconButton>
                                                     </CustomTooltip>
                                                 )
@@ -678,12 +674,12 @@ export default function Dashboard() {
                                             {
                                                 (user?.is_admin === 1) && (
                                                     <CustomTooltip title={"Exporter la base de données"}>
-                                                        <IconButton onClick={() => exportDb()}>
+                                                        <IconButton onClick={() => exportDb()} sx={{ p: 0 }}>
                                                             {
                                                                 !loadingExport ? (
-                                                                    <TbDatabaseExport size={22} className='cursor-pointer' />
+                                                                    <TbDatabaseExport size={20} className='cursor-pointer' />
                                                                 ) : (
-                                                                    <CircularProgress size={19} sx={{ color: `${colors.dark}60` }} value={70} variant="indeterminate" />
+                                                                    <CircularProgress size={17} sx={{ color: `${colors.dark}60` }} value={70} variant="indeterminate" />
                                                                 )
                                                             }
                                                         </IconButton>
@@ -693,15 +689,15 @@ export default function Dashboard() {
                                         </Stack>
                                         <Menu
                                             keepMounted
-                                            sx={{ mt: '45px' }}
+                                            sx={{ mt: '60px' }}
                                             anchorEl={anchorElUser}
-                                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                            anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                                            transformOrigin={{ vertical: 'top', horizontal: 'left' }}
                                             open={Boolean(anchorElUser)}
                                             onClose={() => handleCloseProfileMenu()}
                                         >
                                             <Stack px={2} py={1}>
-                                                <p className='m-0 lexend-bold'>{user?.username}</p>
+                                                <p className='m-0 lexend-bold' style={{ color: `${colors.dark}99` }}>{user?.username}</p>
                                                 <small className='m-0' style={{ color: `${colors.dark}95`, fontSize: 13.5 }}>
                                                     {user?.is_admin === 1 ? "Administrateur" : "Membre"}
                                                 </small>
@@ -720,7 +716,7 @@ export default function Dashboard() {
                                             </Stack>
                                         </Menu>
                                     </Stack>
-                                    <Stack width={"100%"} mt={1} gap={3.5}>
+                                    <Stack width={"100%"} mt={2} gap={3}>
                                         <Stack gap={1} alignItems={"start"}>
                                             <h4 className='m-0'>Situation</h4>
                                             <Stack py={0.8} px={1.5} bgcolor={`${getStatus()?.colors}20`} borderRadius={50}>
