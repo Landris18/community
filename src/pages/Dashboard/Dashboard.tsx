@@ -32,6 +32,7 @@ import LoadingGlobal from '../../components/LoadingGlobal/LoadingGlobal';
 import TabMenu from '../../components/TabMenu/TabMenu';
 import CommonDialog from '../../components/CommonDialog/CommonDialog';
 import MembresContext from '../../contexts/membres/MembresContext';
+import { TbDatabaseExport } from "react-icons/tb";
 import './Dashboard.scss';
 
 
@@ -75,6 +76,7 @@ export default function Dashboard() {
     const [membreId, setMembreId] = useState<null | number>(null);
     const [membre, setMembre] = useState<any>(null);
     const [cotisationsMembres, setCotisationsMembres] = useState<any[]>([]);
+    const [loadingExport, setLoadingExport] = useState<boolean>(false);
 
     // Global filters
     const [anneeGlobal, setAnneeGlobal] = useState(new Date().getFullYear());
@@ -459,6 +461,28 @@ export default function Dashboard() {
         },
     };
 
+    /**
+     * Export database
+    */
+    const exportDb = async () => {
+        setLoadingExport(true);
+        try {
+            const response = await Service.exportDb();
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'community.sql.gz');
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode?.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (_error) {
+            toast.error("Impossible d'exporter la base de données");
+        } finally {
+            setLoadingExport(false);
+        }
+    };
+
     return (
         <>
             {
@@ -629,27 +653,44 @@ export default function Dashboard() {
                         <Drawer id='right-sidebar' sx={{ width: drawerWidthRight, flexShrink: 0, '& .MuiDrawer-paper': { width: drawerWidthRight, boxSizing: 'border-box' } }} variant="permanent" anchor="right">
                             <Stack width={"100%"} height={"100%"} justifyContent={"space-between"} mt={3.5} pb={3}>
                                 <Stack px={6}>
-                                    <Stack width={"100%"} direction={"row"} justifyContent={"end"} alignItems={"center"} gap={0.7}>
-                                        {
-                                            isFullscreen ? (
-                                                <CustomTooltip title={"Mode normale"}>
-                                                    <IconButton onClick={() => toggleFullscreen()}>
-                                                        <MdFullscreenExit size={30} className='cursor-pointer' />
-                                                    </IconButton>
-                                                </CustomTooltip>
-                                            ) : (
-                                                <CustomTooltip title={"Mode plein écran"}>
-                                                    <IconButton onClick={() => toggleFullscreen()}>
-                                                        <MdFullscreen size={30} className='cursor-pointer' />
-                                                    </IconButton>
-                                                </CustomTooltip>
-                                            )
-                                        }
+                                    <Stack width={"100%"} direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
                                         <CustomTooltip title={user?.username}>
                                             <IconButton onClick={handleOpenProfileMenu} sx={{ p: 0 }}>
                                                 <Avatar src={user?.avatar} sizes='md' alt={user?.username} sx={{ border: `4px solid ${hasPaidCurrentMonth ? "white" : colors.red}` }} />
                                             </IconButton>
                                         </CustomTooltip>
+                                        <Stack width={"100%"} direction={"row"} justifyContent={"end"} alignItems={"center"}>
+                                            {
+                                                isFullscreen ? (
+                                                    <CustomTooltip title={"Mode normale"}>
+                                                        <IconButton onClick={() => toggleFullscreen()}>
+                                                            <MdFullscreenExit size={28} className='cursor-pointer' />
+                                                        </IconButton>
+                                                    </CustomTooltip>
+                                                ) : (
+                                                    <CustomTooltip title={"Mode plein écran"}>
+                                                        <IconButton onClick={() => toggleFullscreen()}>
+                                                            <MdFullscreen size={28} className='cursor-pointer' />
+                                                        </IconButton>
+                                                    </CustomTooltip>
+                                                )
+                                            }
+                                            {
+                                                (user?.is_admin === 1) && (
+                                                    <CustomTooltip title={"Exporter la base de données"}>
+                                                        <IconButton onClick={() => exportDb()}>
+                                                            {
+                                                                !loadingExport ? (
+                                                                    <TbDatabaseExport size={22} className='cursor-pointer' />
+                                                                ) : (
+                                                                    <CircularProgress size={19} sx={{ color: `${colors.dark}60` }} value={70} variant="indeterminate" />
+                                                                )
+                                                            }
+                                                        </IconButton>
+                                                    </CustomTooltip>
+                                                )
+                                            }
+                                        </Stack>
                                         <Menu
                                             keepMounted
                                             sx={{ mt: '45px' }}
