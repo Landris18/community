@@ -2,7 +2,10 @@ import * as React from 'react';
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from 'react-query';
-import { Box, Button, CircularProgress, Container, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Stack, TextField } from '@mui/material';
+import {
+    Box, Button, CircularProgress, Container, FormControl, IconButton,
+    InputAdornment, InputLabel, OutlinedInput, Stack, TextField
+} from '@mui/material';
 import communityLogoDark from "../../assets/images/community-dark.svg";
 import LoginIcon from "@mui/icons-material/Login";
 import colors from "../../colors/colors";

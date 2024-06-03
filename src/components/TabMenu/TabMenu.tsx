@@ -9,6 +9,7 @@ import colors from '../../colors/colors';
 import { CiCircleInfo } from "react-icons/ci";
 import { formatNumber } from "../../utility/utility";
 import { AiOutlinePlus } from "react-icons/ai";
+import { MdOutlineFilterAltOff } from "react-icons/md";
 import UserContext from '../../contexts/user/UserContext';
 import CommonDialog from '../CommonDialog/CommonDialog';
 import Service from '../../services/services';
@@ -316,9 +317,10 @@ const TabPanel = (props: TabPanelProps) => {
                 if (index === 3) {
                     return (
                         <Stack mt={1.5}>
-                            <Stack width={"100%"} alignItems={"start"}>
+                            <Stack width={"100%"} alignItems={"center"} direction={"row"} gap={0.7}>
+                                <MdOutlineFilterAltOff color={colors.teal} size={20} />
                                 <small className="lexend-light" style={{ fontSize: 13.5, color: colors.teal, fontStyle: "italic" }}>
-                                    La liste ci-dessous n'est pas filtrée et ne peut pas être filtrée
+                                    La liste des dettes n'est pas filtrée et ne peut pas être filtrée
                                 </small>
                             </Stack>
                             <Stack bgcolor={"#1976d204"} mt={1}>
