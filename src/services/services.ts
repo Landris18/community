@@ -159,6 +159,18 @@ export default class Service {
         return res;
     }
 
+    static async addDepense(depenseData: { montant: number, raison: string, date_creation: string, dette_id?: number }) {
+        let res;
+        await axios.post(`${this.baseUrl}/add_depense`, depenseData, {
+            ...this.getBearerToken(),
+        }).then((response) => {
+            res = response.data;
+        }).catch((error) => {
+            throw error;
+        });
+        return res;
+    }
+
     static async getDettes() {
         let res;
         await axios.get(`${this.baseUrl}/dettes`, {

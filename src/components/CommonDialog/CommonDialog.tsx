@@ -5,8 +5,9 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
+import { FormControl, FormControlLabel, InputLabel, MenuItem, Select, Stack, Switch, TextField, alpha, styled } from '@mui/material';
 import MembresContext from '../../contexts/membres/MembresContext';
+import DettesContext from "../../contexts/dettes/DettesContext";
 import { MONTHS, getYearsBetween } from '../../utility/utility';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -16,29 +17,54 @@ import colors from '../../colors/colors';
 
 const DIALOG_PASSWORD = "DIALOG_PASSWORD";
 const DIALOG_ADD_COTISATION = "DIALOG_ADD_COTISATION";
-
+const DIALOG_ADD_DEPENSE = "DIALOG_ADD_DEPENSE";
 const MODE_PAIEMENT = ["Mvola", "Orange", "En liquide", "Autres"];
+
+const CustomSwitch = styled(Switch)(({ theme }) => ({
+    '& .MuiSwitch-switchBase.Mui-checked': {
+        color: `${colors.blue} !important`,
+        '&:hover': {
+            backgroundColor: alpha(colors.blue, theme.palette.action.hoverOpacity),
+        },
+    },
+    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+        backgroundColor: `${colors.blue} !important`,
+    },
+}));
 
 
 export default function CommonDialog({ open, options }: { open: boolean, options: any }) {
     const { membres } = useContext(MembresContext);
+    const { dettes } = useContext(DettesContext);
 
     const { dialog, handleCloseDialog, handleConfirmDialog } = options;
     const [dataPass, setDataPass] = useState({ old_password: '', new_password: '', confirm_password: '' });
     const [dataCotisations, setDataCotisations] = useState(
         { membre_id: '', mode_paiement: '', montant: 5000, mois: [], date_paiement: new Date(), annee: new Date().getFullYear() }
     );
+    const [dataDepense, setDataDepense] = useState({ montant: 0, raison: "", date_creation: new Date(), dette_id: "" });
     const [lstYears] = useState(getYearsBetween());
+    const [isRemboursement, setIsRemboursement] = useState<boolean>(false);
     const [addCotisationsDisabled, setAddCotisationsDisabled] = useState(false);
+    const [addDepenseDisabled, setAddDepenseDisabled] = useState(false);
 
 
     useEffect(() => {
         setAddCotisationsDisabled(false);
+        setAddDepenseDisabled(false);
     }, [dataCotisations]);
 
 
     const handlePasswords = (pass: { key: string, value: string }) => {
         setDataPass({ ...dataPass, [pass.key]: pass.value });
+    };
+
+    const handleCotisations = async (data: { key: string, value: any }) => {
+        setDataCotisations({ ...dataCotisations, [data.key]: data.value });
+    };
+
+    const handleDepense = async (data: { key: string, value: any }) => {
+        setDataDepense({ ...dataDepense, [data.key]: data.value });
     };
 
     const isDataPassValid = () => {
@@ -48,10 +74,6 @@ export default function CommonDialog({ open, options }: { open: boolean, options
         );
     };
 
-    const handleCotisations = async (data: { key: string, value: any }) => {
-        setDataCotisations({ ...dataCotisations, [data.key]: data.value });
-    };
-
     const isDataCotisationsValid = () => {
         return (
             dataCotisations["membre_id"] !== "" && dataCotisations["mode_paiement"] !== "" && dataCotisations["montant"] >= 0
@@ -59,9 +81,22 @@ export default function CommonDialog({ open, options }: { open: boolean, options
         );
     };
 
+    const isDataDepenseValid = () => {
+        if (isRemboursement) { if (!dataDepense["dette_id"]) return false; }
+        return (
+            dataDepense["raison"] !== "" && dataDepense["montant"] > 0
+        );
+    };
+
+    const handleIsRemboursement = async (event: any) => {
+        setIsRemboursement(event.target.checked);
+    };
+
     const resetAllData = () => {
         setDataPass({ old_password: '', new_password: '', confirm_password: '' });
         setDataCotisations({ membre_id: '', mode_paiement: '', montant: 5000, mois: [], date_paiement: new Date(), annee: new Date().getFullYear() });
+        setDataDepense({ montant: 0, raison: "", date_creation: new Date(), dette_id: "" });
+        setIsRemboursement(false);
     };
 
     return (
@@ -203,6 +238,74 @@ export default function CommonDialog({ open, options }: { open: boolean, options
                                     </Button>
                                     <Button disabled={!isDataCotisationsValid() || addCotisationsDisabled} variant='contained' className={`${!isDataCotisationsValid() || addCotisationsDisabled ? 'secondary-button' : 'primary-button'} radius-0`}
                                         onClick={() => { handleConfirmDialog(dataCotisations); setAddCotisationsDisabled(true) }}>
+                                        Confirmer
+                                    </Button>
+                                </Stack>
+                            </DialogContent>
+                        </Dialog>
+                    )
+                }
+                if (dialog === DIALOG_ADD_DEPENSE) {
+                    return (
+                        <Dialog open={open} onClose={handleCloseDialog}>
+                            <DialogTitle>
+                                Nouvelle dépense
+                            </DialogTitle>
+                            <DialogContent>
+                                <Stack mt={1} gap={2} width={"100%"}>
+                                    <FormControlLabel control={<CustomSwitch size="small" checked={isRemboursement} onChange={handleIsRemboursement} />} label={"Remboursement dette"} />
+                                    {
+                                        isRemboursement && (
+                                            <FormControl fullWidth>
+                                                <InputLabel>Dette</InputLabel>
+                                                <Select
+                                                    value={dataDepense["dette_id"]}
+                                                    label="Dette"
+                                                    onChange={(event) => handleDepense({ key: "dette_id", value: event?.target.value })}
+                                                >
+                                                    {
+                                                        dettes.map((dt: any) => (
+                                                            <MenuItem key={dt?.id} value={dt?.id}>{dt?.raison} de {dt?.debiteur}</MenuItem>
+                                                        ))
+                                                    }
+                                                </Select>
+                                            </FormControl>
+                                        )
+                                    }
+                                    <Stack direction={"row"} gap={1.5} alignItems={"center"}>
+                                        <FormControl sx={{ width: 300 }}>
+                                            <TextField label={"Montant"} variant="outlined" type='number'
+                                                value={dataDepense["montant"]} onChange={(event) => handleDepense({ key: "montant", value: event?.target.value ? parseInt(event?.target.value) : "" })}
+                                            />
+                                        </FormControl>
+                                    </Stack>
+                                    <Stack direction={"row"} gap={1.5} alignItems={"center"}>
+                                        <FormControl sx={{ width: 300 }}>
+                                            <TextField label={"Raison"} variant="outlined" type='text'
+                                                value={dataDepense["raison"]} onChange={(event) => handleDepense({ key: "raison", value: event?.target.value })}
+                                            />
+                                        </FormControl>
+                                    </Stack>
+                                    <LocalizationProvider adapterLocale="fr" dateAdapter={AdapterDayjs}>
+                                        <FormControl fullWidth>
+                                            <DatePicker
+                                                label="Date"
+                                                value={dayjs(dataDepense["date_creation"])}
+                                                minDate={dayjs('2024-02-01')}
+                                                maxDate={dayjs(new Date())}
+                                                onChange={(value: any) => handleDepense({ key: "date_creation", value: dayjs(value).format("YYYY-MM-DD") })}
+                                            />
+                                        </FormControl>
+                                    </LocalizationProvider>
+                                </Stack>
+                            </DialogContent>
+                            <DialogContent>
+                                <Stack width={"100%"} direction={"row"} justifyContent={"end"} gap={1.2}>
+                                    <Button onClick={() => { handleCloseDialog(); resetAllData() }} className={`secondary-button radius-0`}>
+                                        Annuler
+                                    </Button>
+                                    <Button disabled={!isDataDepenseValid() || addDepenseDisabled} variant='contained' className={`${!isDataDepenseValid() || addCotisationsDisabled ? 'secondary-button' : 'primary-button'} radius-0`}
+                                        onClick={() => { handleConfirmDialog(dataDepense); setAddDepenseDisabled(true) }}>
                                         Confirmer
                                     </Button>
                                 </Stack>

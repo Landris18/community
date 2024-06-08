@@ -53,6 +53,7 @@ const columns = [
 ];
 
 const DIALOG_ADD_COTISATION = "DIALOG_ADD_COTISATION";
+const DIALOG_ADD_DEPENSE = "DIALOG_ADD_DEPENSE";
 
 
 const TabPanel = (props: TabPanelProps) => {
@@ -75,6 +76,14 @@ const TabPanel = (props: TabPanelProps) => {
             };
             setDialogCommonOptions(options);
         }
+        if (dialog === DIALOG_ADD_DEPENSE) {
+            const options = {
+                dialog: dialog,
+                handleCloseDialog: handleCloseDialogCommon,
+                handleConfirmDialog: addDepense
+            };
+            setDialogCommonOptions(options);
+        }
     };
 
     const handleCloseDialogCommon = () => { setOpenDialogCommon(false) };
@@ -92,6 +101,16 @@ const TabPanel = (props: TabPanelProps) => {
             setOpenDialogCommon(false);
         }).catch((_error: any) => {
             toast.error(_error?.response?.data?.error ?? "Impossible d'ajouter ces cotisations");
+            setOpenDialogCommon(false);
+        });
+    };
+
+    const addDepense = async (depenseData: { montant: number, raison: string, date_creation: string, dette_id?: number }) => {
+        await Service.addDepense(depenseData).then(() => {
+            toast.success(`Dépense enregistrée`);
+            setOpenDialogCommon(false);
+        }).catch((_error: any) => {
+            toast.error(_error?.response?.data?.error ?? "Impossible d'ajouter la dépense");
             setOpenDialogCommon(false);
         });
     };
@@ -126,7 +145,7 @@ const TabPanel = (props: TabPanelProps) => {
                                         <Button variant='contained' className={`add-button`} startIcon={<AiOutlinePlus color={"white"} size={17} />}
                                             onClick={() => { handleOpenDialogCommon(DIALOG_ADD_COTISATION) }}
                                         >
-                                            Cotisation
+                                            Cotisations
                                         </Button>
                                     )
                                 }
@@ -161,7 +180,7 @@ const TabPanel = (props: TabPanelProps) => {
                                                         <TableCell colSpan={5}>
                                                             <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} py={5} gap={0.6}>
                                                                 <CiCircleInfo size={60} color={`${colors.teal}`} />
-                                                                <h4 className='m-0 no-data-table' style={{ color: `${colors.teal}` }}>Aucun données à afficher</h4>
+                                                                <h4 className='m-0 no-data-table' style={{ color: `${colors.teal}` }}>Aucune données à afficher</h4>
                                                             </Stack>
                                                         </TableCell>
                                                     </TableRow>
@@ -228,7 +247,7 @@ const TabPanel = (props: TabPanelProps) => {
                                                         <TableCell colSpan={4}>
                                                             <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} py={5} gap={0.6}>
                                                                 <CiCircleInfo size={60} color={`${colors.teal}`} />
-                                                                <h4 className='m-0 no-data-table' style={{ color: `${colors.teal}` }}>Aucun données à afficher</h4>
+                                                                <h4 className='m-0 no-data-table' style={{ color: `${colors.teal}` }}>Aucune données à afficher</h4>
                                                             </Stack>
                                                         </TableCell>
                                                     </TableRow>
@@ -257,8 +276,17 @@ const TabPanel = (props: TabPanelProps) => {
                 if (index === 2) {
                     return (
                         <Stack mt={1.5}>
-                            <Stack width={"100%"} alignItems={"end"}>
-                                <FormControlLabel control={<CustomSwitch size="small" checked={valueSwitch} onChange={changeSwitch as any} />} label={"Paiement dette"} />
+                            <Stack width={"100%"} justifyContent={user?.is_admin === 1 ? "space-between" : "end"} direction={"row"}>
+                                {
+                                    user?.is_admin === 1 && (
+                                        <Button variant='contained' className={`add-button`} startIcon={<AiOutlinePlus color={"white"} size={17} />}
+                                            onClick={() => { handleOpenDialogCommon(DIALOG_ADD_DEPENSE) }}
+                                        >
+                                            Dépense
+                                        </Button>
+                                    )
+                                }
+                                <FormControlLabel control={<CustomSwitch size="small" checked={valueSwitch} onChange={changeSwitch as any} />} label={"Remboursement dette"} />
                             </Stack>
                             <Stack bgcolor={"#1976d204"}>
                                 <TableContainer sx={{ maxHeight: 500 }} >
@@ -289,7 +317,7 @@ const TabPanel = (props: TabPanelProps) => {
                                                         <TableCell colSpan={3}>
                                                             <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} py={5} gap={0.6}>
                                                                 <CiCircleInfo size={60} color={`${colors.teal}`} />
-                                                                <h4 className='m-0 no-data-table' style={{ color: `${colors.teal}` }}>Aucun données à afficher</h4>
+                                                                <h4 className='m-0 no-data-table' style={{ color: `${colors.teal}` }}>Aucune données à afficher</h4>
                                                             </Stack>
                                                         </TableCell>
                                                     </TableRow>
@@ -320,7 +348,7 @@ const TabPanel = (props: TabPanelProps) => {
                             <Stack width={"100%"} alignItems={"center"} direction={"row"} gap={0.7}>
                                 <MdOutlineFilterAltOff color={colors.teal} size={20} />
                                 <small className="lexend-light" style={{ fontSize: 13.5, color: colors.teal, fontStyle: "italic" }}>
-                                    La liste des dettes n'est pas filtrée et ne peut pas être filtrée
+                                    Liste non filtrable
                                 </small>
                             </Stack>
                             <Stack bgcolor={"#1976d204"} mt={1}>
@@ -342,7 +370,7 @@ const TabPanel = (props: TabPanelProps) => {
                                                         <TableCell colSpan={5}>
                                                             <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} py={5} gap={0.6}>
                                                                 <CiCircleInfo size={60} color={`${colors.teal}`} />
-                                                                <h4 className='m-0 no-data-table' style={{ color: `${colors.teal}` }}>Aucun données à afficher</h4>
+                                                                <h4 className='m-0 no-data-table' style={{ color: `${colors.teal}` }}>Aucune données à afficher</h4>
                                                             </Stack>
                                                         </TableCell>
                                                     </TableRow>

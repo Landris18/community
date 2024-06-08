@@ -11,6 +11,8 @@ import { HiOutlineUsers } from "react-icons/hi2";
 import colors from '../../colors/colors';
 import { useContext, useEffect, useState } from 'react';
 import UserContext from '../../contexts/user/UserContext';
+import MembresContext from '../../contexts/membres/MembresContext';
+import DettesContext from '../../contexts/dettes/DettesContext';
 import { GiReceiveMoney } from "react-icons/gi";
 import { HiOutlineLockClosed } from "react-icons/hi2";
 import { TbLogout } from "react-icons/tb";
@@ -31,7 +33,6 @@ import { toast } from 'react-toastify';
 import LoadingGlobal from '../../components/LoadingGlobal/LoadingGlobal';
 import TabMenu from '../../components/TabMenu/TabMenu';
 import CommonDialog from '../../components/CommonDialog/CommonDialog';
-import MembresContext from '../../contexts/membres/MembresContext';
 import { TbDatabaseExport } from "react-icons/tb";
 import './Dashboard.scss';
 
@@ -52,6 +53,7 @@ export default function Dashboard() {
     const navigate = useNavigate();
     const { user } = useContext(UserContext);
     const { setMembresData } = useContext(MembresContext);
+    const { setDettesData } = useContext(DettesContext);
 
     const [activeMenu, setActiveMenu] = useState(TRANSACTIONS);
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -177,6 +179,7 @@ export default function Dashboard() {
             refetch: false,
             queryFn: () => Service.getDettes(),
             onSuccess: (data: any) => {
+                setDettesData(data.success.dettes);
                 setDettes(data.success.dettes);
             },
             onError: (_error: any) => {
@@ -546,7 +549,7 @@ export default function Dashboard() {
                                                     ) : (
                                                         <Stack width={"100%"} justifyContent={"center"} alignItems={"center"} pb={5} gap={0.6}>
                                                             <CiCircleInfo size={60} color={`${colors.teal}`} />
-                                                            <h4 className='m-0' style={{ color: `${colors.teal}` }}>Aucun données pour l'année {anneeGlobal}</h4>
+                                                            <h4 className='m-0' style={{ color: `${colors.teal}` }}>Aucune données pour l'année {anneeGlobal}</h4>
                                                         </Stack>
                                                     )
                                                 }
@@ -793,7 +796,7 @@ export default function Dashboard() {
                                 </Stack>
                                 <Stack px={8} pt={5}>
                                     <small className='text-center' style={{ color: `${colors.dark}95`, fontSize: 12.5 }}>
-                                        Community 0.1.2-beta <br /> By Landry Manankoraisina
+                                        Community 0.1.2-beta
                                     </small>
                                 </Stack>
                             </Stack>
