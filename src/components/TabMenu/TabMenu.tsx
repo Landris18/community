@@ -152,7 +152,7 @@ const TabPanel = (props: TabPanelProps) => {
                                 <FormControlLabel control={<CustomSwitch size="small" checked={valueSwitch} onChange={changeSwitch as any} />} label={"Payées"} />
                             </Stack>
                             <Stack bgcolor={"#1976d204"}>
-                                <TableContainer sx={{ maxHeight: 500 }} >
+                                <TableContainer sx={{ maxHeight: 490 }} >
                                     <Table sx={{ minWidth: 550 }} aria-label="simple table" stickyHeader>
                                         <TableHead>
                                             <TableRow>
@@ -219,7 +219,7 @@ const TabPanel = (props: TabPanelProps) => {
                     return (
                         <Stack mt={1.5}>
                             <Stack bgcolor={"#1976d204"}>
-                                <TableContainer sx={{ maxHeight: 500 }} >
+                                <TableContainer sx={{ maxHeight: 490 }} >
                                     <Table sx={{ minWidth: 550 }} aria-label="simple table" stickyHeader>
                                         <TableHead>
                                             <TableRow>
@@ -289,7 +289,7 @@ const TabPanel = (props: TabPanelProps) => {
                                 <FormControlLabel control={<CustomSwitch size="small" checked={valueSwitch} onChange={changeSwitch as any} />} label={"Remboursement dette"} />
                             </Stack>
                             <Stack bgcolor={"#1976d204"}>
-                                <TableContainer sx={{ maxHeight: 500 }} >
+                                <TableContainer sx={{ maxHeight: 490 }} >
                                     <Table sx={{ minWidth: 550 }} aria-label="simple table" stickyHeader>
                                         <TableHead>
                                             <TableRow>
@@ -352,7 +352,7 @@ const TabPanel = (props: TabPanelProps) => {
                                 </small>
                             </Stack>
                             <Stack bgcolor={"#1976d204"} mt={1}>
-                                <TableContainer sx={{ maxHeight: 500 }} >
+                                <TableContainer sx={{ maxHeight: 490 }} >
                                     <Table sx={{ minWidth: 550 }} aria-label="simple table" stickyHeader>
                                         <TableHead>
                                             <TableRow>

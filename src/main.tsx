@@ -4,8 +4,8 @@ import RouterCommunity from './router/Router.tsx'
 import { QueryClient, QueryClientProvider } from 'react-query';
 import UserProvider from './contexts/user/UserProvider.tsx';
 import MembresProvider from './contexts/membres/MembresProvider.tsx';
-import './assets/styles/index.scss'
 import DettesProvider from './contexts/dettes/DettesProvider.tsx';
+import './assets/styles/index.scss';
 
 const queryClient = new QueryClient();
 

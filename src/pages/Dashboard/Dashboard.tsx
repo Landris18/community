@@ -26,7 +26,7 @@ import CustomTooltip from '../../components/CustomTooltip/CustomTooltip';
 import ConfirmationDialog from '../../components/ConfirmDialog/ConfirmDialog';
 import { MONTHS, MONTHS_LIST, formatNumber, getYearsBetween, removeToken } from '../../utility/utility';
 import { useNavigate } from 'react-router-dom';
-import { useQueries } from 'react-query';
+import { QueryKey, UseQueryOptions, useQueries } from 'react-query';
 import Service from '../../services/services';
 import Toastr from '../../components/Toastr/Toastr';
 import { toast } from 'react-toastify';
@@ -48,6 +48,12 @@ const DIALOG_DECONNEXION = "DIALOG_DECONNEXION";
 const DIALOG_PASSWORD = "DIALOG_PASSWORD";
 const TRANSACTIONS = "TRANSACTIONS";
 
+interface QueryOptions<TData, TError> extends UseQueryOptions<TData, TError> {
+    queryKey: QueryKey;
+    queryFn: () => Promise<TData>;
+    onSuccess?: (data: TData) => void;
+    onError?: (error: TError) => void;
+};
 
 export default function Dashboard() {
     const navigate = useNavigate();
@@ -100,13 +106,12 @@ export default function Dashboard() {
 
 
     /**
-     * Initial queries
+     * Queries initialization
     */
-    const queries = [
+    const queries: QueryOptions<any, any>[] = [
         {
             queryKey: 'totals',
             retry: false,
-            refetch: false,
             queryFn: () => Service.getTotals(),
             onSuccess: (data: any) => {
                 setTotals(data.success);
@@ -120,7 +125,6 @@ export default function Dashboard() {
         {
             queryKey: 'stats',
             retry: false,
-            refetch: false,
             queryFn: () => Service.getStats(anneeFilterGlobal),
             onSuccess: (data: any) => {
                 setStats(data.success);
@@ -134,7 +138,6 @@ export default function Dashboard() {
         {
             queryKey: 'cotisations',
             retry: false,
-            refetch: false,
             queryFn: () => Service.getCotisations(anneeFilterGlobal, moisFilterGlobal, onlyPaidFilter, undefined),
             onSuccess: (data: any) => {
                 setCotisations(data.success.cotisations);
@@ -148,7 +151,6 @@ export default function Dashboard() {
         {
             queryKey: 'revenus',
             retry: false,
-            refetch: false,
             queryFn: () => Service.getRevenus(anneeFilterGlobal, moisFilterGlobal),
             onSuccess: (data: any) => {
                 setRevenus(data.success.revenus);
@@ -162,7 +164,6 @@ export default function Dashboard() {
         {
             queryKey: 'depenses',
             retry: false,
-            refetch: false,
             queryFn: () => Service.getDepenses(anneeFilterGlobal, moisFilterGlobal, forDetteFilter),
             onSuccess: (data: any) => {
                 setDepenses(data.success.depenses);
@@ -176,7 +177,6 @@ export default function Dashboard() {
         {
             queryKey: 'dettes',
             retry: false,
-            refetch: false,
             queryFn: () => Service.getDettes(),
             onSuccess: (data: any) => {
                 setDettesData(data.success.dettes);
@@ -191,7 +191,6 @@ export default function Dashboard() {
         {
             queryKey: 'membres',
             retry: false,
-            refetch: false,
             queryFn: () => Service.getMembres(),
             onSuccess: (data: any) => {
                 setMembresData(data.success);
@@ -206,7 +205,6 @@ export default function Dashboard() {
         {
             queryKey: 'cotisations_membres',
             retry: false,
-            refetch: false,
             queryFn: () => Service.getCotisations(undefined, undefined, undefined, true),
             onSuccess: (data: any) => {
                 setCotisationsMembres(data.success.cotisations);
@@ -228,7 +226,7 @@ export default function Dashboard() {
         if (allLoaded) {
             setAllQueriesLoaded(true);
         }
-    }, [queryResults, user?.username]);
+    }, [queryResults, user]);
 
     useEffect(() => {
         const getStatusCotisationUser = (username: string) => {
@@ -240,7 +238,7 @@ export default function Dashboard() {
             }
         }
         getStatusCotisationUser(user?.username);
-    }, [anneeFilterGlobal, cotisations, moisFilterGlobal, user?.username]);
+    }, [anneeFilterGlobal, moisFilterGlobal, cotisations, user]);
 
 
     /**
@@ -363,7 +361,7 @@ export default function Dashboard() {
         return obj?.map((ob: any) => ob.totalMontant || 0);
     };
 
-    const handleChangeAnneeGlobal = async (event: any) => {
+    const handleAnneeGlobalChange = async (event: any) => {
         if (anneeGlobal !== event.target.value) {
             anneeFilterGlobal = event.target.value;
             setAnneeGlobal(event.target.value);
@@ -527,7 +525,7 @@ export default function Dashboard() {
                                                     <Select
                                                         value={anneeGlobal}
                                                         label="Année"
-                                                        onChange={handleChangeAnneeGlobal}
+                                                        onChange={handleAnneeGlobalChange}
                                                     >
                                                         {
                                                             lstYears.map((year: number) => (
