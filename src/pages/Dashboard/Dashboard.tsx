@@ -229,16 +229,16 @@ export default function Dashboard() {
     }, [queryResults, user]);
 
     useEffect(() => {
-        const getStatusCotisationUser = (username: string) => {
-            if (cotisations && cotisations?.length > 0 && moisFilterGlobal === MONTHS[new Date().getMonth()] && anneeFilterGlobal === new Date().getFullYear()) {
-                const cotisation = cotisations.find((c: any) => c.username === username);
-                if (cotisation && cotisation?.montant) {
+        const getCurrentMonthStatus = (userId: number) => {
+            if (cotisationsMembres.length > 0) {
+                const filterByMembre: any = cotisationsMembres?.filter((ct: any) => ct.membre_id === userId)[0];
+                if (filterByMembre["annees"][(new Date().getFullYear()).toString()].includes(MONTHS[new Date().getMonth()])) {
                     setHasPaidCurrentMonth(true);
                 }
             }
         }
-        getStatusCotisationUser(user?.username);
-    }, [anneeFilterGlobal, moisFilterGlobal, cotisations, user]);
+        getCurrentMonthStatus(user?.id);
+    }, [cotisationsMembres, user]);
 
 
     /**
@@ -655,7 +655,9 @@ export default function Dashboard() {
                             <Stack width={"100%"} height={"100%"} justifyContent={"space-between"} mt={3.5} pb={3}>
                                 <Stack px={5}>
                                     <Stack direction={"row"} bgcolor={`${colors.teal}09`} py={1} px={1.5} borderRadius={3} justifyContent={"space-between"} alignItems={"center"}>
-                                        <Avatar className='cursor-pointer' onClick={handleOpenProfileMenu} src={user?.avatar} sizes='md' alt={user?.username} sx={{ border: `4px solid ${hasPaidCurrentMonth ? "white" : colors.red}` }} />
+                                        <Avatar className='cursor-pointer' onClick={handleOpenProfileMenu} src={user?.avatar} sizes='md' alt={user?.username}
+                                            sx={{ border: `${hasPaidCurrentMonth ? "0px" : '4px'} solid ${hasPaidCurrentMonth ? "white" : colors.red}` }}
+                                        />
                                         <Stack width={"100%"} direction={"row"} justifyContent={"end"} alignItems={"center"} gap={1}>
                                             {
                                                 isFullscreen ? (
