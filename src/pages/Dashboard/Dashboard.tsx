@@ -422,19 +422,24 @@ export default function Dashboard() {
         labels: getMonth(stats.cotisations),
         datasets: [
             {
-                label: 'Revenu total',
-                data: extractTotalMontant(stats.revenus_total),
-                backgroundColor: colors.blue,
+                label: 'Dette cumulée',
+                data: extractTotalMontant(stats.dettes),
+                backgroundColor: colors.yellow,
             },
             {
-                label: 'Dépense',
+                label: 'Revenus total',
+                data: extractTotalMontant(stats.revenus_total),
+                backgroundColor: colors.teal,
+            },
+            {
+                label: 'Dépenses',
                 data: extractTotalMontant(stats.depenses),
                 backgroundColor: colors.red,
             },
             {
-                label: 'Dette cumulée',
-                data: extractTotalMontant(stats.dettes),
-                backgroundColor: colors.yellow,
+                label: 'Profits',
+                data: extractTotalMontant(stats.profits),
+                backgroundColor: colors.blue,
             }
         ],
     };
@@ -653,8 +658,8 @@ export default function Dashboard() {
                         })()}
                         <Drawer id='right-sidebar' sx={{ width: drawerWidthRight, flexShrink: 0, '& .MuiDrawer-paper': { width: drawerWidthRight, boxSizing: 'border-box' } }} variant="permanent" anchor="right">
                             <Stack width={"100%"} height={"100%"} justifyContent={"space-between"} mt={3.5} pb={3}>
-                                <Stack px={5}>
-                                    <Stack direction={"row"} bgcolor={`${colors.teal}09`} py={1} px={1.5} borderRadius={3} justifyContent={"space-between"} alignItems={"center"}>
+                                <Stack px={3}>
+                                    <Stack direction={"row"} bgcolor={`${colors.teal}09`} py={1} px={1.5} borderRadius={10} justifyContent={"space-between"} alignItems={"center"}>
                                         <Avatar className='cursor-pointer' onClick={handleOpenProfileMenu} src={user?.avatar} sizes='md' alt={user?.username}
                                             sx={{ border: `${hasPaidCurrentMonth ? "0px" : '4px'} solid ${hasPaidCurrentMonth ? "white" : colors.red}` }}
                                         />
@@ -719,16 +724,16 @@ export default function Dashboard() {
                                             </Stack>
                                         </Menu>
                                     </Stack>
-                                    <Stack width={"100%"} mt={2} gap={3}>
+                                    <Stack mt={2} bgcolor={`${colors.teal}09`} py={2} px={2.5} borderRadius={5} gap={3}>
                                         <Stack gap={1} alignItems={"start"}>
-                                            <h4 className='m-0'>Situation</h4>
+                                            <h4 className='m-0' style={{ fontSize: 16 }}>Situation</h4>
                                             <Stack py={0.8} px={1.5} bgcolor={`${getStatus()?.colors}20`} borderRadius={50}>
                                                 <small style={{ color: `${getStatus()?.colors}`, letterSpacing: 0.5, fontSize: 12.5 }}>{getStatus()?.status}</small>
                                             </Stack>
                                         </Stack>
                                         <Stack gap={1.8}>
-                                            <h4 className='m-0'>Budget</h4>
-                                            <Stack direction={"row"} bgcolor={colors.teal} borderRadius={3} p={2} justifyContent={"space-between"} alignItems={"center"}>
+                                            <h4 className='m-0' style={{ fontSize: 16 }}>Budget</h4>
+                                            <Stack direction={"row"} bgcolor={colors.green} borderRadius={3} p={2} justifyContent={"space-between"} alignItems={"center"}>
                                                 <Stack direction={"row"} alignItems={"center"} gap={1.5}>
                                                     <TbMoneybag size={30} color='white' />
                                                     <Stack>
@@ -772,7 +777,7 @@ export default function Dashboard() {
                                             </Stack>
                                         </Stack>
                                         <Stack gap={1.5}>
-                                            <h4 className='m-0'>Répartition</h4>
+                                            <h4 className='m-0' style={{ fontSize: 16 }}>Répartition</h4>
                                             <Doughnut data={totalsChartData} options={{
                                                 plugins: {
                                                     tooltip: {
@@ -796,7 +801,7 @@ export default function Dashboard() {
                                 </Stack>
                                 <Stack px={8} pt={5}>
                                     <small className='text-center' style={{ color: `${colors.dark}95`, fontSize: 12.5 }}>
-                                        Community 0.1.2-beta
+                                        Community 0.2.2-beta
                                     </small>
                                 </Stack>
                             </Stack>
