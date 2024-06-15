@@ -40,11 +40,12 @@ export default function CommonDialog({ open, options }: { open: boolean, options
     const { dialog, handleCloseDialog, handleConfirmDialog } = options;
     const [dataPass, setDataPass] = useState({ old_password: '', new_password: '', confirm_password: '' });
     const [dataCotisations, setDataCotisations] = useState(
-        { membre_id: '', mode_paiement: '', montant: 5000, mois: [], date_paiement: new Date(), annee: new Date().getFullYear() }
+        { membre_id: '', mode_paiement: '', montant: 5000, mois: [], date_paiement: new Date(), annee: new Date().getFullYear(), nb_retards: 0 }
     );
     const [dataDepense, setDataDepense] = useState({ montant: 0, raison: "", date_creation: new Date(), dette_id: "" });
     const [lstYears] = useState(getYearsBetween());
     const [isRemboursement, setIsRemboursement] = useState<boolean>(false);
+    const [hasRetard, setHasRetard] = useState<boolean>(false);
     const [addCotisationsDisabled, setAddCotisationsDisabled] = useState(false);
     const [addDepenseDisabled, setAddDepenseDisabled] = useState(false);
 
@@ -92,9 +93,13 @@ export default function CommonDialog({ open, options }: { open: boolean, options
         setIsRemboursement(event.target.checked);
     };
 
+    const handleHasRetard = async (event: any) => {
+        setHasRetard(event.target.checked);
+    };
+
     const resetAllData = () => {
         setDataPass({ old_password: '', new_password: '', confirm_password: '' });
-        setDataCotisations({ membre_id: '', mode_paiement: '', montant: 5000, mois: [], date_paiement: new Date(), annee: new Date().getFullYear() });
+        setDataCotisations({ membre_id: '', mode_paiement: '', montant: 5000, mois: [], date_paiement: new Date(), annee: new Date().getFullYear(), nb_retards: 0 });
         setDataDepense({ montant: 0, raison: "", date_creation: new Date(), dette_id: "" });
         setIsRemboursement(false);
     };
@@ -152,6 +157,12 @@ export default function CommonDialog({ open, options }: { open: boolean, options
                             </DialogTitle>
                             <DialogContent>
                                 <Stack mt={1} gap={2} width={"100%"}>
+                                    <FormControl sx={{ width: "35%", ml: 0.6 }}>
+                                        <FormControlLabel
+                                            control={<CustomSwitch size="small" checked={hasRetard} onChange={handleHasRetard} />}
+                                            label={"Retard de paiement"}
+                                        />
+                                    </FormControl>
                                     <FormControl fullWidth>
                                         <InputLabel>Membre</InputLabel>
                                         <Select
@@ -166,6 +177,15 @@ export default function CommonDialog({ open, options }: { open: boolean, options
                                             }
                                         </Select>
                                     </FormControl>
+                                    {
+                                        hasRetard && (
+                                            <FormControl fullWidth>
+                                                <TextField label={"Nombre de mois de retard"} variant="outlined" type='number'
+                                                    value={dataCotisations["nb_retards"]} onChange={(event) => handleCotisations({ key: "nb_retards", value: parseInt(event?.target.value) })}
+                                                />
+                                            </FormControl>
+                                        )
+                                    }
                                     <Stack direction={"row"} gap={1.5} alignItems={"center"}>
                                         <FormControl sx={{ width: 300 }}>
                                             <TextField label={"Montant"} variant="outlined" type='number'
@@ -253,7 +273,12 @@ export default function CommonDialog({ open, options }: { open: boolean, options
                             </DialogTitle>
                             <DialogContent>
                                 <Stack mt={1} gap={2} width={"100%"}>
-                                    <FormControlLabel control={<CustomSwitch size="small" checked={isRemboursement} onChange={handleIsRemboursement} />} label={"Remboursement dette"} />
+                                    <FormControl sx={{ width: "70%", ml: 0.6 }}>
+                                        <FormControlLabel
+                                            control={<CustomSwitch size="small" checked={isRemboursement} onChange={handleIsRemboursement} />}
+                                            label={"Remboursement dette"}
+                                        />
+                                    </FormControl>
                                     {
                                         isRemboursement && (
                                             <FormControl fullWidth>
