@@ -49,7 +49,7 @@ const columns = [
     ["Date de paiement", "Membre", "Montant en MGA", "Mois concerné", "Mode de paiement"],
     ["Date", "Provenance", "Montant en MGA", "Raison"],
     ["Date", "Montant en MGA", "Raison"],
-    ["Date d'emprunt", "Montant en MGA", "Reste à payer en MGA", "Débiteur", "Raison", "Statut"]
+    ["Date d'emprunt", "Montant emprunté MGA", "Montant restant MGA", "Date du dernier paiement", "Débiteur", "Raison", "Statut"]
 ];
 
 const DIALOG_ADD_COTISATION = "DIALOG_ADD_COTISATION";
@@ -384,6 +384,7 @@ const TabPanel = (props: TabPanelProps) => {
                                                             </TableCell>
                                                             <TableCell align="right">{formatNumber(row.montant)}</TableCell>
                                                             <TableCell align="right">{formatNumber(row.montant_reste)}</TableCell>
+                                                            <TableCell align="right">{moment(row.date_maj).format("DD-MM-YYYY")}</TableCell>
                                                             <TableCell align="right">{row.debiteur}</TableCell>
                                                             <TableCell align="right">{row.raison ?? "Aucune"}</TableCell>
                                                             <TableCell align="right">
