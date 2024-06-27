@@ -24,6 +24,7 @@ interface TabPanelProps {
     data?: any;
     valueSwitch?: boolean;
     changeSwitch?: Function;
+    refreshData?: Function;
     isLoading?: boolean
 }
 
@@ -59,7 +60,7 @@ const DIALOG_ADD_DEPENSE = "DIALOG_ADD_DEPENSE";
 const TabPanel = (props: TabPanelProps) => {
     const { user } = React.useContext(UserContext);
 
-    const { value, index, data, valueSwitch, changeSwitch, isLoading } = props;
+    const { value, index, data, valueSwitch, changeSwitch, refreshData, isLoading } = props;
     const cols = columns[index];
 
     const [openDialogCommon, setOpenDialogCommon] = React.useState(false);
@@ -99,6 +100,7 @@ const TabPanel = (props: TabPanelProps) => {
         await Service.addCotisations(updatedCotisationsData).then((res: any) => {
             toast.success(`Cotisations enregistrées ${res["success"]["saved"]}, ignorées ${res["success"]["ignored"]}`);
             setOpenDialogCommon(false);
+            if (refreshData) refreshData();
         }).catch((_error: any) => {
             toast.error(_error?.response?.data?.error ?? "Impossible d'ajouter ces cotisations");
             setOpenDialogCommon(false);
@@ -109,6 +111,7 @@ const TabPanel = (props: TabPanelProps) => {
         await Service.addDepense(depenseData).then(() => {
             toast.success(`Dépense enregistrée`);
             setOpenDialogCommon(false);
+            if (refreshData) refreshData();
         }).catch((_error: any) => {
             toast.error(_error?.response?.data?.error ?? "Impossible d'ajouter la dépense");
             setOpenDialogCommon(false);
@@ -424,9 +427,9 @@ const a11yProps = (index: number) => {
 
 export default function TabMenu(props: any) {
     const { cotisations, revenus, depenses, dettes } = props;
-    const { dataCotisations, valueSwitchCotisations, changeOnlyPaid, isLoadingCotisations } = cotisations;
+    const { dataCotisations, valueSwitchCotisations, changeOnlyPaid, refreshFromCotisation, isLoadingCotisations } = cotisations;
     const { dataRevenus, isLoadingRevenus } = revenus;
-    const { dataDepenses, valueSwitchDepenses, changeForDette, isLoadingDepenses } = depenses;
+    const { dataDepenses, valueSwitchDepenses, changeForDette, refreshFromDepense, isLoadingDepenses } = depenses;
     const { dataDettes } = dettes;
 
     const [value, setValue] = React.useState(0);
@@ -451,9 +454,9 @@ export default function TabMenu(props: any) {
                     <StyledTab label="Dettes" {...a11yProps(3)} className="tab-label" />
                 </Tabs>
             </Stack>
-            <TabPanel value={value} index={0} data={dataCotisations} valueSwitch={valueSwitchCotisations} changeSwitch={changeOnlyPaid} isLoading={isLoadingCotisations} />
+            <TabPanel value={value} index={0} data={dataCotisations} valueSwitch={valueSwitchCotisations} changeSwitch={changeOnlyPaid} refreshData={refreshFromCotisation} isLoading={isLoadingCotisations} />
             <TabPanel value={value} index={1} data={dataRevenus} isLoading={isLoadingRevenus} />
-            <TabPanel value={value} index={2} data={dataDepenses} valueSwitch={valueSwitchDepenses} changeSwitch={changeForDette} isLoading={isLoadingDepenses} />
+            <TabPanel value={value} index={2} data={dataDepenses} valueSwitch={valueSwitchDepenses} changeSwitch={changeForDette} refreshData={refreshFromDepense} isLoading={isLoadingDepenses} />
             <TabPanel value={value} index={3} data={dataDettes} />
         </Box>
     );

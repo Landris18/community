@@ -34,6 +34,9 @@ import LoadingGlobal from '../../components/LoadingGlobal/LoadingGlobal';
 import TabMenu from '../../components/TabMenu/TabMenu';
 import CommonDialog from '../../components/CommonDialog/CommonDialog';
 import { TbDatabaseExport } from "react-icons/tb";
+import { TfiPieChart } from "react-icons/tfi";
+import { IoBookmarkOutline } from "react-icons/io5";
+import { RiDonutChartLine } from 'react-icons/ri';
 import './Dashboard.scss';
 
 
@@ -309,7 +312,6 @@ export default function Dashboard() {
                 navigate("/", { replace: true });
             }, 1500);
         }).catch((_error: any) => {
-            console.log(_error);
             toast.error(_error?.response?.data?.error ?? "Impossible de vous déconnecter");
         });
     };
@@ -324,7 +326,6 @@ export default function Dashboard() {
                 navigate("/", { replace: true });
             }, 1500);
         }).catch((_error: any) => {
-            console.log(_error);
             toast.error(_error?.response?.data?.error ?? "Impossible de mettre à jour votre mot de passe");
         });
     };
@@ -402,6 +403,12 @@ export default function Dashboard() {
             await queryResults[4].refetch();
             setLoadingRefetchDepenses(false);
         }
+    };
+
+    const refreshData = async () => {
+        queryResults.forEach((queryResult) => {
+            queryResult.refetch();
+        });
     };
 
     /**
@@ -577,13 +584,25 @@ export default function Dashboard() {
                                                 </Stack>
                                                 <TabMenu
                                                     cotisations={
-                                                        { dataCotisations: cotisations, valueSwitchCotisations: onlyPaid, changeOnlyPaid: handleOnlyPaidChange, isLoadingCotisations: loadingRefetch || loadingRefetchTab || loadingRefetchCotisations }
+                                                        {
+                                                            dataCotisations: cotisations,
+                                                            valueSwitchCotisations: onlyPaid,
+                                                            changeOnlyPaid: handleOnlyPaidChange,
+                                                            refreshFromCotisation: refreshData,
+                                                            isLoadingCotisations: loadingRefetch || loadingRefetchTab || loadingRefetchCotisations
+                                                        }
                                                     }
                                                     revenus={
                                                         { dataRevenus: revenus, isLoadingRevenus: loadingRefetch || loadingRefetchTab }
                                                     }
                                                     depenses={
-                                                        { dataDepenses: depenses, valueSwitchDepenses: forDette, changeForDette: handleForDetteChange, isLoadingDepenses: loadingRefetch || loadingRefetchTab || loadingRefetchDepenses }
+                                                        {
+                                                            dataDepenses: depenses,
+                                                            valueSwitchDepenses: forDette,
+                                                            changeForDette: handleForDetteChange,
+                                                            refreshFromDepense: refreshData,
+                                                            isLoadingDepenses: loadingRefetch || loadingRefetchTab || loadingRefetchDepenses
+                                                        }
                                                     }
                                                     dettes={
                                                         { dataDettes: dettes }
@@ -724,15 +743,21 @@ export default function Dashboard() {
                                             </Stack>
                                         </Menu>
                                     </Stack>
-                                    <Stack mt={2} bgcolor={`${colors.teal}09`} py={2} px={2.5} borderRadius={5} gap={3}>
+                                    <Stack mt={2} bgcolor={`${colors.teal}09`} py={4} px={4} borderRadius={10} gap={3}>
                                         <Stack gap={1} alignItems={"start"}>
-                                            <h4 className='m-0' style={{ fontSize: 16 }}>Situation</h4>
+                                            <Stack direction={"row"} gap={1} alignItems={"center"}>
+                                                <RiDonutChartLine size={18} color={colors.teal} />
+                                                <h4 className='m-0' style={{ fontSize: 15.6 }}>Situation</h4>
+                                            </Stack>
                                             <Stack py={0.8} px={1.5} bgcolor={`${getStatus()?.colors}20`} borderRadius={50}>
                                                 <small style={{ color: `${getStatus()?.colors}`, letterSpacing: 0.5, fontSize: 12.5 }}>{getStatus()?.status}</small>
                                             </Stack>
                                         </Stack>
                                         <Stack gap={1.8}>
-                                            <h4 className='m-0' style={{ fontSize: 16 }}>Budget</h4>
+                                            <Stack direction={"row"} gap={1} alignItems={"center"}>
+                                                <IoBookmarkOutline size={18} color={colors.teal} />
+                                                <h4 className='m-0' style={{ fontSize: 15.6 }}>Budget</h4>
+                                            </Stack>
                                             <Stack direction={"row"} bgcolor={colors.green} borderRadius={3} p={2} justifyContent={"space-between"} alignItems={"center"}>
                                                 <Stack direction={"row"} alignItems={"center"} gap={1.5}>
                                                     <TbMoneybag size={30} color='white' />
@@ -777,7 +802,10 @@ export default function Dashboard() {
                                             </Stack>
                                         </Stack>
                                         <Stack gap={1.5}>
-                                            <h4 className='m-0' style={{ fontSize: 16 }}>Répartition</h4>
+                                            <Stack direction={"row"} gap={1} alignItems={"center"}>
+                                                <TfiPieChart size={18} color={colors.teal} />
+                                                <h4 className='m-0' style={{ fontSize: 15.6 }}>Répartition</h4>
+                                            </Stack>
                                             <Doughnut data={totalsChartData} options={{
                                                 plugins: {
                                                     tooltip: {
@@ -814,4 +842,4 @@ export default function Dashboard() {
             <Toastr />
         </>
     );
-}
+};
