@@ -41,7 +41,7 @@ import './Dashboard.scss';
 
 
 const drawerWidth = 85;
-const drawerWidthRight = 365;
+const drawerWidthRight = 350;
 
 Chart.register(ArcElement, Tooltip, Legend);
 Chart.defaults.font.family = "lexend";
@@ -525,7 +525,7 @@ export default function Dashboard() {
                         {(() => {
                             if (activeMenu === TRANSACTIONS) {
                                 return (
-                                    <Box id='main' component="main" sx={{ flexGrow: 1, bgcolor: '#fbfbfb', px: 5, pt: 2.5, overflowY: "scroll" }} height={"100vh"}>
+                                    <Box id='main' component="main" sx={{ flexGrow: 1, bgcolor: '#fbfbfb', px: 4, pt: 2.5, overflowY: "scroll" }} height={"100vh"}>
                                         <Stack width={"100%"}>
                                             <Stack direction={"row"} justifyContent={"space-between"} alignItems={"end"}>
                                                 <Stack>
@@ -743,9 +743,9 @@ export default function Dashboard() {
                                             </Stack>
                                         </Menu>
                                     </Stack>
-                                    <Stack mt={2} bgcolor={`${colors.teal}09`} py={4} px={4} borderRadius={10} gap={3}>
+                                    <Stack mt={2} bgcolor={`${colors.teal}09`} py={3} px={3} borderRadius={5} gap={3}>
                                         <Stack gap={1} alignItems={"start"}>
-                                            <Stack direction={"row"} gap={1} alignItems={"center"}>
+                                            <Stack direction={"row"} gap={0.5} alignItems={"center"}>
                                                 <RiDonutChartLine size={18} color={colors.teal} />
                                                 <h4 className='m-0' style={{ fontSize: 15.6 }}>Situation</h4>
                                             </Stack>
@@ -754,7 +754,7 @@ export default function Dashboard() {
                                             </Stack>
                                         </Stack>
                                         <Stack gap={1.8}>
-                                            <Stack direction={"row"} gap={1} alignItems={"center"}>
+                                            <Stack direction={"row"} gap={0.4} alignItems={"center"}>
                                                 <IoBookmarkOutline size={18} color={colors.teal} />
                                                 <h4 className='m-0' style={{ fontSize: 15.6 }}>Budget</h4>
                                             </Stack>
@@ -802,7 +802,7 @@ export default function Dashboard() {
                                             </Stack>
                                         </Stack>
                                         <Stack gap={1.5}>
-                                            <Stack direction={"row"} gap={1} alignItems={"center"}>
+                                            <Stack direction={"row"} gap={0.6} alignItems={"center"}>
                                                 <TfiPieChart size={18} color={colors.teal} />
                                                 <h4 className='m-0' style={{ fontSize: 15.6 }}>Répartition</h4>
                                             </Stack>
@@ -829,7 +829,7 @@ export default function Dashboard() {
                                 </Stack>
                                 <Stack px={8} pt={5}>
                                     <small className='text-center' style={{ color: `${colors.dark}95`, fontSize: 12.5 }}>
-                                        Community 0.2.2-beta
+                                        Community 0.2.5-beta
                                     </small>
                                 </Stack>
                             </Stack>
