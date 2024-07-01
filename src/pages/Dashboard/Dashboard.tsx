@@ -54,9 +54,11 @@ const TRANSACTIONS = "TRANSACTIONS";
 interface QueryOptions<TData, TError> extends UseQueryOptions<TData, TError> {
     queryKey: QueryKey;
     queryFn: () => Promise<TData>;
+    // eslint-disable-next-line no-unused-vars
     onSuccess?: (data: TData) => void;
+    // eslint-disable-next-line no-unused-vars
     onError?: (error: TError) => void;
-};
+}
 
 export default function Dashboard() {
     const navigate = useNavigate();
@@ -842,4 +844,4 @@ export default function Dashboard() {
             <Toastr />
         </>
     );
-};
+}
