@@ -90,12 +90,13 @@ const TabPanel = (props: TabPanelProps) => {
     const handleCloseDialogCommon = () => { setOpenDialogCommon(false) };
 
     const addCotisations = async (cotisationsData: {
-        membre_id: number, mode_paiement: string, montant: number, mois: string[], date_paiement: string, annee: number
+        membre_id: number, mode_paiement: string, montant: number, mois: string[], date_paiement: string, annee: number, nb_retards: number
     }) => {
         const moisAnnee = cotisationsData["mois"].map((mois: string) => mois + " " + cotisationsData["annee"]);
         const updatedCotisationsData = {
             membre_id: cotisationsData["membre_id"], mode_paiement: cotisationsData["mode_paiement"],
-            montant: cotisationsData["montant"], date_paiement: cotisationsData["date_paiement"], lst_mois_annee: moisAnnee
+            montant: cotisationsData["montant"], date_paiement: cotisationsData["date_paiement"],
+            lst_mois_annee: moisAnnee, nb_retards: cotisationsData["nb_retards"]
         };
         await Service.addCotisations(updatedCotisationsData).then((res: any) => {
             toast.success(`Cotisations enregistrées ${res["success"]["saved"]}, ignorées ${res["success"]["ignored"]}`);

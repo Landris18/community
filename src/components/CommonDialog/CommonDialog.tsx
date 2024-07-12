@@ -100,10 +100,12 @@ export default function CommonDialog({ open, options }: { open: boolean, options
     const resetAllData = () => {
         setDataPass({ old_password: '', new_password: '', confirm_password: '' });
         setDataCotisations({ membre_id: '', mode_paiement: '', montant: 5000, mois: [], date_paiement: new Date(), annee: new Date().getFullYear(), nb_retards: 0 });
+        setHasRetard(false);
         setDataDepense({ montant: 0, raison: "", date_creation: new Date(), dette_id: "" });
         setIsRemboursement(false);
     };
 
+    console.log(dataCotisations);
     return (
         <>
             {(() => {
