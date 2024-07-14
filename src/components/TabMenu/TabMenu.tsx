@@ -153,7 +153,7 @@ const TabPanel = (props: TabPanelProps) => {
                                         </Button>
                                     )
                                 }
-                                <FormControlLabel control={<CustomSwitch size="small" checked={valueSwitch} onChange={changeSwitch as any} />} label={"Payées"} />
+                                <FormControlLabel control={<CustomSwitch size="small" checked={valueSwitch} onChange={changeSwitch as any} />} label={"Payées seulement"} />
                             </Stack>
                             <Stack bgcolor={"#1976d204"}>
                                 <TableContainer sx={{ maxHeight: 490 }} >
@@ -315,7 +315,7 @@ const TabPanel = (props: TabPanelProps) => {
                                                         </TableCell>
                                                     </TableRow>
                                                 </TableBody>
-                                            ) : !isLoading && data?.length === 0 ? (
+                                            ) : (!isLoading && data?.length === 0) || (!data?.length) ? (
                                                 <TableBody>
                                                     <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                                         <TableCell colSpan={3}>

@@ -135,7 +135,7 @@ export default class Service {
         return res;
     }
 
-    static async getRevenus(annee: number, mois: string) {
+    static async getRevenus(annee: number, mois?: string) {
         let res;
         await axios.get(`${this.baseUrl}/revenus?annee=${annee}&mois=${mois}`, {
             ...this.getBearerToken(),
@@ -147,7 +147,7 @@ export default class Service {
         return res;
     }
 
-    static async getDepenses(annee: number, mois: string, forDette: boolean) {
+    static async getDepenses(annee: number, mois?: string, forDette?: boolean) {
         let res;
         await axios.get(`${this.baseUrl}/depenses?annee=${annee}&mois=${mois}&for_dette=${forDette}`, {
             ...this.getBearerToken(),

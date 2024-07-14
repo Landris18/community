@@ -50,6 +50,12 @@ const DIALOG_DECONNEXION = "DIALOG_DECONNEXION";
 const DIALOG_PASSWORD = "DIALOG_PASSWORD";
 const TRANSACTIONS = "TRANSACTIONS";
 
+const MEMBRES = [
+    "Angela", "Arlème", "Bertilo", "Charla", "Damia", "Dario", "Diamondra", "Dominick",
+    "Gaetan", "Hasina", "Kezia", "Lahatra", "Landry", "Mahery", "Miarana", "Nazirah",
+    "Ntsoa", "Princia", "Raja", "Rivo", "Rojo", "Sergio"
+];
+
 interface QueryOptions<TData, TError> extends UseQueryOptions<TData, TError> {
     queryKey: QueryKey;
     queryFn: () => Promise<TData>;
@@ -77,9 +83,11 @@ export default function Dashboard() {
     const [membres, setMembres] = useState<any>();
     const [cotisations, setCotisations] = useState<any>([]);
     const [cotisationsShowed, setCotisationsShowed] = useState<any>([]);
-    const [revenus, setRevenus] = useState<any>({});
-    const [depenses, setDepenses] = useState<any>({});
-    const [dettes, setDettes] = useState<any>({});
+    const [revenus, setRevenus] = useState<any>([]);
+    const [revenusShowed, setRevenusShowed] = useState<any>([]);
+    const [depenses, setDepenses] = useState<any>([]);
+    const [depensesShowed, setDepensesShowed] = useState<any>([]);
+    const [dettes, setDettes] = useState<any>([]);
     const [lstYears] = useState(getYearsBetween());
     const [loadingRefetch, setLoadingRefetch] = useState<boolean>(false);
     const [loadingRefetchTab, setLoadingRefetchTab] = useState<boolean>(false);
@@ -104,6 +112,7 @@ export default function Dashboard() {
     // Dépenses filter
     const [forDette, setForDette] = useState(false);
     let forDetteFilter = onlyPaid;
+
 
     // Menu anchors
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -158,9 +167,11 @@ export default function Dashboard() {
         {
             queryKey: 'revenus',
             retry: false,
-            queryFn: () => Service.getRevenus(anneeFilterGlobal, moisFilterGlobal),
+            queryFn: () => Service.getRevenus(anneeFilterGlobal),
             onSuccess: (data: any) => {
-                setRevenus(data.success.revenus);
+                const response: any[] = data.success.revenus;
+                setRevenus(response);
+                setRevenusShowed(filterRevenus(response));
             },
             onError: (_error: any) => {
                 if (_error?.response?.data?.error) {
@@ -171,9 +182,11 @@ export default function Dashboard() {
         {
             queryKey: 'depenses',
             retry: false,
-            queryFn: () => Service.getDepenses(anneeFilterGlobal, moisFilterGlobal, forDetteFilter),
+            queryFn: () => Service.getDepenses(anneeFilterGlobal),
             onSuccess: (data: any) => {
+                const response: any[] = data.success.depenses;
                 setDepenses(data.success.depenses);
+                setDepensesShowed(filterDepenses(response));
             },
             onError: (_error: any) => {
                 if (_error?.response?.data?.error) {
@@ -368,9 +381,9 @@ export default function Dashboard() {
 
     const filterCotisations = (data: any[]) => {
         const monthCotisations = data.filter((cotisation: any) => cotisation.mois === moisFilterGlobal);
-        const allUsernames = membres.map((res: any) => res.username);
         const usernamesPaid = monthCotisations.map((res: any) => res.username);
-        const usernamesNotPaid = allUsernames.filter((username: any) => !usernamesPaid.includes(username));
+        const usernamesNotPaid = MEMBRES.filter((username: any) => !usernamesPaid.includes(username));
+
         if (!onlyPaidFilter) {
             usernamesNotPaid.forEach((username: any) => {
                 monthCotisations.push({
@@ -384,6 +397,18 @@ export default function Dashboard() {
             });
         }
         return monthCotisations;
+    };
+
+    const filterRevenus = (data: any[]) => {
+        return data.filter((revenu: any) => revenu.mois === moisFilterGlobal);
+    };
+
+    const filterDepenses = (data: any[]) => {
+        const monthDepenses = data.filter((depense: any) => depense.mois === moisFilterGlobal);
+        if (forDetteFilter) {
+            return monthDepenses.filter((depense: any) => depense.dette_id);
+        }
+        return monthDepenses;
     };
 
     const handleAnneeGlobalChange = async (event: any) => {
@@ -403,8 +428,8 @@ export default function Dashboard() {
             setMoisGlobal(event.target.value);
             setLoadingRefetchTab(true);
             setCotisationsShowed(filterCotisations(cotisations));
-            await queryResults[3].refetch();
-            await queryResults[4].refetch();
+            setRevenusShowed(filterRevenus(revenus));
+            setDepensesShowed(filterDepenses(depenses));
             setLoadingRefetchTab(false);
         }
     };
@@ -424,7 +449,7 @@ export default function Dashboard() {
             forDetteFilter = event.target.checked;
             setForDette(event.target.checked);
             setLoadingRefetchDepenses(true);
-            await queryResults[4].refetch();
+            setDepensesShowed(filterDepenses(depenses));
             setLoadingRefetchDepenses(false);
         }
     };
@@ -617,11 +642,11 @@ export default function Dashboard() {
                                                         }
                                                     }
                                                     revenus={
-                                                        { dataRevenus: revenus, isLoadingRevenus: loadingRefetch || loadingRefetchTab }
+                                                        { dataRevenus: revenusShowed, isLoadingRevenus: loadingRefetch || loadingRefetchTab }
                                                     }
                                                     depenses={
                                                         {
-                                                            dataDepenses: depenses,
+                                                            dataDepenses: depensesShowed,
                                                             valueSwitchDepenses: forDette,
                                                             changeForDette: handleForDetteChange,
                                                             refreshFromDepense: refreshData,
@@ -771,7 +796,7 @@ export default function Dashboard() {
                                         <Stack gap={1.8}>
                                             <Stack direction={"row"} gap={0.4} alignItems={"center"}>
                                                 <IoBookmarkOutline size={18} color={colors.teal} />
-                                                <h4 className='m-0' style={{ fontSize: 15.6 }}>Budget</h4>
+                                                <h4 className='m-0' style={{ fontSize: 15.6 }}>Situation</h4>
                                                 <Stack py={0.5} px={1.5} bgcolor={`${getStatus()?.colors}20`} borderRadius={50}>
                                                     <small style={{ color: `${getStatus()?.colors}`, letterSpacing: 0.5, fontSize: 12.5 }}>{getStatus()?.status}</small>
                                                 </Stack>
