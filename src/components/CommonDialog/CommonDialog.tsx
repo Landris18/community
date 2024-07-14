@@ -105,7 +105,6 @@ export default function CommonDialog({ open, options }: { open: boolean, options
         setIsRemboursement(false);
     };
 
-    console.log(dataCotisations);
     return (
         <>
             {(() => {

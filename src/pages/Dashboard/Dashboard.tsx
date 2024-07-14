@@ -75,7 +75,8 @@ export default function Dashboard() {
     const [totals, setTotals] = useState<any>({});
     const [stats, setStats] = useState<any>({});
     const [membres, setMembres] = useState<any>();
-    const [cotisations, setCotisations] = useState<any>({});
+    const [cotisations, setCotisations] = useState<any>([]);
+    const [cotisationsShowed, setCotisationsShowed] = useState<any>([]);
     const [revenus, setRevenus] = useState<any>({});
     const [depenses, setDepenses] = useState<any>({});
     const [dettes, setDettes] = useState<any>({});
@@ -142,9 +143,11 @@ export default function Dashboard() {
         {
             queryKey: 'cotisations',
             retry: false,
-            queryFn: () => Service.getCotisations(anneeFilterGlobal, moisFilterGlobal, onlyPaidFilter, undefined),
+            queryFn: () => Service.getCotisations(anneeFilterGlobal),
             onSuccess: (data: any) => {
-                setCotisations(data.success.cotisations);
+                const response: any[] = data.success.cotisations;
+                setCotisations(response);
+                setCotisationsShowed(filterCotisations(response));
             },
             onError: (_error: any) => {
                 if (_error?.response?.data?.error) {
@@ -363,6 +366,26 @@ export default function Dashboard() {
         return obj?.map((ob: any) => ob.totalMontant || 0);
     };
 
+    const filterCotisations = (data: any[]) => {
+        const monthCotisations = data.filter((cotisation: any) => cotisation.mois === moisFilterGlobal);
+        const allUsernames = membres.map((res: any) => res.username);
+        const usernamesPaid = monthCotisations.map((res: any) => res.username);
+        const usernamesNotPaid = allUsernames.filter((username: any) => !usernamesPaid.includes(username));
+        if (!onlyPaidFilter) {
+            usernamesNotPaid.forEach((username: any) => {
+                monthCotisations.push({
+                    "username": username,
+                    "date_paiement": null,
+                    "mois": moisFilterGlobal,
+                    "annee": anneeFilterGlobal,
+                    "montant": null,
+                    "mode_paiement": null
+                });
+            });
+        }
+        return monthCotisations;
+    };
+
     const handleAnneeGlobalChange = async (event: any) => {
         if (anneeGlobal !== event.target.value) {
             anneeFilterGlobal = event.target.value;
@@ -379,7 +402,7 @@ export default function Dashboard() {
             moisFilterGlobal = event.target.value;
             setMoisGlobal(event.target.value);
             setLoadingRefetchTab(true);
-            await queryResults[2].refetch();
+            setCotisationsShowed(filterCotisations(cotisations));
             await queryResults[3].refetch();
             await queryResults[4].refetch();
             setLoadingRefetchTab(false);
@@ -391,7 +414,7 @@ export default function Dashboard() {
             onlyPaidFilter = event.target.checked;
             setOnlyPaid(event.target.checked);
             setLoadingRefetchCotisations(true);
-            await queryResults[2].refetch();
+            setCotisationsShowed(filterCotisations(cotisations));
             setLoadingRefetchCotisations(false);
         }
     };
@@ -586,7 +609,7 @@ export default function Dashboard() {
                                                 <TabMenu
                                                     cotisations={
                                                         {
-                                                            dataCotisations: cotisations,
+                                                            dataCotisations: cotisationsShowed,
                                                             valueSwitchCotisations: onlyPaid,
                                                             changeOnlyPaid: handleOnlyPaidChange,
                                                             refreshFromCotisation: refreshData,
