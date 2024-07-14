@@ -36,7 +36,6 @@ import CommonDialog from '../../components/CommonDialog/CommonDialog';
 import { TbDatabaseExport } from "react-icons/tb";
 import { TfiPieChart } from "react-icons/tfi";
 import { IoBookmarkOutline } from "react-icons/io5";
-import { RiDonutChartLine } from 'react-icons/ri';
 import './Dashboard.scss';
 
 
@@ -746,19 +745,13 @@ export default function Dashboard() {
                                         </Menu>
                                     </Stack>
                                     <Stack mt={2} bgcolor={`${colors.teal}09`} py={3} px={3} borderRadius={5} gap={3}>
-                                        <Stack gap={1} alignItems={"start"}>
-                                            <Stack direction={"row"} gap={0.5} alignItems={"center"}>
-                                                <RiDonutChartLine size={18} color={colors.teal} />
-                                                <h4 className='m-0' style={{ fontSize: 15.6 }}>Situation</h4>
-                                            </Stack>
-                                            <Stack py={0.8} px={1.5} bgcolor={`${getStatus()?.colors}20`} borderRadius={50}>
-                                                <small style={{ color: `${getStatus()?.colors}`, letterSpacing: 0.5, fontSize: 12.5 }}>{getStatus()?.status}</small>
-                                            </Stack>
-                                        </Stack>
                                         <Stack gap={1.8}>
                                             <Stack direction={"row"} gap={0.4} alignItems={"center"}>
                                                 <IoBookmarkOutline size={18} color={colors.teal} />
                                                 <h4 className='m-0' style={{ fontSize: 15.6 }}>Budget</h4>
+                                                <Stack py={0.5} px={1.5} bgcolor={`${getStatus()?.colors}20`} borderRadius={50}>
+                                                    <small style={{ color: `${getStatus()?.colors}`, letterSpacing: 0.5, fontSize: 12.5 }}>{getStatus()?.status}</small>
+                                                </Stack>
                                             </Stack>
                                             <Stack direction={"row"} bgcolor={colors.green} borderRadius={3} p={2} justifyContent={"space-between"} alignItems={"center"}>
                                                 <Stack direction={"row"} alignItems={"center"} gap={1.5}>
